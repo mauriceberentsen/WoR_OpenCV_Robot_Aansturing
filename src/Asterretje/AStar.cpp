@@ -17,7 +17,7 @@ namespace PathAlgorithm
 	double ActualCost(	const Vertex& aStart,
 						const Vertex& aGoal)
 	{
-		return std::sqrt( (aStart.x - aGoal.x) * (aStart.x - aGoal.x) + (aStart.y - aGoal.y) * (aStart.y - aGoal.y));
+		return std::sqrt( (aStart.phi1 - aGoal.phi1) * (aStart.phi1 - aGoal.phi1) + (aStart.phi2 - aGoal.phi2) * (aStart.phi2 - aGoal.phi2));
 	}
 	/**
 	 *
@@ -25,7 +25,7 @@ namespace PathAlgorithm
 	double HeuristicCost(	const Vertex& aStart,
 							const Vertex& aGoal)
 	{
-		return std::sqrt( (aStart.x - aGoal.x) * (aStart.x - aGoal.x) + (aStart.y - aGoal.y) * (aStart.y - aGoal.y));
+		return std::sqrt( (aStart.phi1 - aGoal.phi1) * (aStart.phi1 - aGoal.phi1) + (aStart.phi2 - aGoal.phi2) * (aStart.phi2 - aGoal.phi2));
 	}
 	/**
 	 *
