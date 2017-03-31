@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 		g.addEdge(PathAlgorithm::Edge(g.findVertexbyName("(10,7)"),g.findVertexbyName("(10,10)")));
 
 
-		std::cout<<"hello_world"<<std::endl;
+		std::cout<<"hello_world1"<<std::endl;
 		g.findShortestPath("(0,0)","(10,10)");
 
 
