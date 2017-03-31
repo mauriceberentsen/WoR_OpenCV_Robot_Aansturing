@@ -17,7 +17,7 @@ namespace PathAlgorithm
 	double ActualCost(	const Vertex& aStart,
 						const Vertex& aGoal)
 	{
-		return std::sqrt( (aStart.phi1 - aGoal.phi1) * (aStart.phi1 - aGoal.phi1) + (aStart.phi2 - aGoal.phi2) * (aStart.phi2 - aGoal.phi2));
+		return std::sqrt( (aStart.phi1 - aGoal.phi1) * (aStart.phi1 - aGoal.phi1) + (aStart.phi2 - aGoal.phi2) * (aStart.phi2 - aGoal.phi2) + (aStart.phi3 - aGoal.phi3) * (aStart.phi3 - aGoal.phi3));
 	}
 	/**
 	 *
@@ -25,7 +25,7 @@ namespace PathAlgorithm
 	double HeuristicCost(	const Vertex& aStart,
 							const Vertex& aGoal)
 	{
-		return std::sqrt( (aStart.phi1 - aGoal.phi1) * (aStart.phi1 - aGoal.phi1) + (aStart.phi2 - aGoal.phi2) * (aStart.phi2 - aGoal.phi2));
+		return std::sqrt( (aStart.phi1 - aGoal.phi1) * (aStart.phi1 - aGoal.phi1) + (aStart.phi2 - aGoal.phi2) * (aStart.phi2 - aGoal.phi2)+ (aStart.phi3 - aGoal.phi3) * (aStart.phi3 - aGoal.phi3));
 	}
 	/**
 	 *
@@ -49,50 +49,25 @@ namespace PathAlgorithm
 	/**
 	 *
 	 */
-	std::vector< Vertex > GetNeighbours(	const Vertex& aVertex,
-											std::vector<Edge> edges
-											/*int aFreeRadius = 1*/)
+	std::vector< Vertex > GetNeighbours(	const Vertex& aVertex/*,
+											std::vector<Edge> edges,
+											int aFreeRadius = 1*/)
 				{
-		//static int xOffset[] = { 0, 1, 1, 1, 0, -1, -1, -1 };
-		//static int yOffset[] = { 1, 1, 0, -1, -1, -1, 0, 1 };
-
-		//Wconst std::vector< Model::WallPtr >& walls = Model::RobotWorld::getRobotWorld().getWalls();
 		std::vector< Vertex > neighbours;
 
-//		for (int i = 0; i < 8; ++i)
-//		{
-//			bool addToNeigbours = true;
-
-//			Vertex vertex( aVertex.x + xOffset[i], aVertex.y + yOffset[i]);
-//			for (Model::WallPtr wall : walls)
-//			{
-//				if (Utils::Shape2DUtils::isOnLine( wall->getPoint1(), wall->getPoint2(), vertex.asPoint(), aFreeRadius))
-//				{
-//					addToNeigbours = false;
-//					break;
-//				}
-//			}
-//			if (addToNeigbours == true)
-//			{
-//				neighbours.push_back( vertex);
-//			}
-//		}
-
-		for(auto& e : edges)
+		for(int i = -1; i <= 1; ++i )
 		{
-			try
+			for(int j = -1; j <= 1; ++j )
 			{
-				Vertex otherSide = e.otherSide(aVertex);
-				neighbours.push_back(otherSide);
-			}
-			catch (std::exception& e)
-			{
-
-			}
-
-		}
-		return neighbours;
+				for(int k = -1; k <= 1; ++k )
+				{
+					neighbours.push_back(Vertex(aVertex.name,aVertex.phi1 + i, aVertex.phi2 + j, aVertex.phi3 + k));
 				}
+			}
+		}
+
+		return neighbours;
+	}
 	/**
 	 *
 	 */
@@ -101,14 +76,14 @@ namespace PathAlgorithm
 				{
 		std::vector< Edge > connections;
 
-		const std::vector< Vertex >& neighbours = GetNeighbours( aVertex,edges /*aFreeRadius*/);
+		const std::vector< Vertex >& neighbours = GetNeighbours( aVertex/*,edges, aFreeRadius*/);
 		for (const Vertex& vertex : neighbours)
 		{
 			connections.push_back( Edge( aVertex, vertex));
 		}
 
 		return connections;
-				}
+		}
 	/**
 	 *
 	 */
