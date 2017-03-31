@@ -2,6 +2,7 @@
 #define ASTAR_HPP_
 
 #include <iostream>
+#include <iomanip>
 #include <map>
 #include <mutex>
 #include <set>
@@ -29,11 +30,12 @@ namespace PathAlgorithm
 			{
 			}
 
-			Vertex(	double anPh1,
+			Vertex(	std::string aName,
+					double anPh1,
 					double anPh2,
 					double anPh3
 					) :
-						name(""),
+						name(aName),
 						phi1(anPh1),
 						phi2(anPh2),
 						phi3(anPh3),
@@ -48,12 +50,12 @@ namespace PathAlgorithm
 						name(aName),
 						phi1( anX),
 						phi2( anY),
-						phi3( 0),
+						phi3( 42),
 						actualCost( 0.0),
 						heuristicCost( 0.0)
 			{
 			}
-
+/*
 			Vertex(	std::string aName,
 					double anX,
 					double anY,
@@ -62,11 +64,11 @@ namespace PathAlgorithm
 						name(aName),
 						phi1( anX),
 						phi2( anY),
-						phi3(0),
+						phi3(66),
 						actualCost( cost),
 						heuristicCost( 0.0)
 			{
-			}
+			}*/
 			/**
 			 *
 			 */
@@ -113,16 +115,29 @@ namespace PathAlgorithm
 			 */
 			bool lessId( const Vertex& aVertex) const
 			{
+/*				if(phi1 < aVertex.phi1 && phi2 < aVertex.phi2) return true;
+				//if(phi1 < aVertex.phi1) return true;
+				//if(phi1 == aVertex.phi1) return phi2 < aVertex.phi2;
+				if(phi1 == aVertex.phi1 && phi2 == aVertex.phi2) return phi3 < aVertex.phi3;
+				*/
 				if(phi1 < aVertex.phi1) return true;
-				if(phi1 == aVertex.phi1) return phi2 < aVertex.phi2;
+				if(phi1 == aVertex.phi1){
+					if(phi2 == aVertex.phi2){
+						return phi3 < aVertex.phi3;
+					}
+					return phi2 < aVertex.phi2;
+				}
 				return false;
+
 			}
+
 			/**
 			 *
 			 */
 			bool equalPoint( const Vertex& aVertex) const
 			{
-				return phi1 == aVertex.phi1 && phi2 == aVertex.phi2;
+			//std::cout<<std::setprecision(1)<<std::fixed<<aVertex.phi1 << "==" << phi1 << ";"<<aVertex.phi2 << "==" << phi2 << ";"<<aVertex.phi3 << "==" << phi3 << ";" <<std::endl ;
+				return phi1 == aVertex.phi1 && phi2 == aVertex.phi2 && phi3 == aVertex.phi3;
 			}
 
 			std::string name;
@@ -219,7 +234,7 @@ namespace PathAlgorithm
 	inline std::ostream& operator<<( 	std::ostream& os,
 										const Vertex & aVertex)
 	{
-		return os << aVertex.name<<": " << "(" << aVertex.phi1 << "," << aVertex.phi2 << "), " << aVertex.actualCost << " " << aVertex.heuristicCost;
+		return os << aVertex.name<<": " << "(" << aVertex.phi1 << "," << aVertex.phi2 << "," << aVertex.phi3 << "), " << aVertex.actualCost << " " << aVertex.heuristicCost;
 	}
 	/**
 	 *
