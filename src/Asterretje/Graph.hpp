@@ -20,15 +20,12 @@ public:
 
 	void addEdge(const PathAlgorithm::Edge& aEdge);
 
-	PathAlgorithm::Vertex& findVertexbyName(std::string vertexName);
-
 	void printEdges();
 
 	void printVertex();
 
-	void findShortestPath(std::string startVertex, std::string goalVertex);
+	void findShortestPath(const PathAlgorithm::Vertex& startVertex,const PathAlgorithm::Vertex& goalVertex);
 
-	//std::vector<PathAlgorithm::Edge> getEdgeRelationByVertexName(std::string startVertex, std::string goalVertex);
 
 private:
 	std::vector<PathAlgorithm::Vertex> v;

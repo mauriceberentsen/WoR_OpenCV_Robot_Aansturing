@@ -1,7 +1,4 @@
 #include "AStar.hpp"
-//#include <RobotWorld.hpp>
-//#include <Shape2DUtils.hpp>
-//#include <Wall.hpp>
 #include <algorithm>
 #include <cmath>
 #include <iterator>
@@ -61,7 +58,7 @@ namespace PathAlgorithm
 			{
 				for(int k = -1; k <= 1; ++k )
 				{
-					neighbours.push_back(Vertex(aVertex.name,aVertex.phi1 + i, aVertex.phi2 + j, aVertex.phi3 + k));
+					neighbours.push_back(Vertex(aVertex.phi1 + i, aVertex.phi2 + j, aVertex.phi3 + k));
 				}
 			}
 		}
@@ -71,12 +68,11 @@ namespace PathAlgorithm
 	/**
 	 *
 	 */
-	std::vector< Edge > GetNeighbourConnections(	const Vertex& aVertex,
-													std::vector<Edge> edges/*int aFreeRadius = 1*/)
+	std::vector< Edge > GetNeighbourConnections(	const Vertex& aVertex)
 				{
 		std::vector< Edge > connections;
 
-		const std::vector< Vertex >& neighbours = GetNeighbours( aVertex/*,edges, aFreeRadius*/);
+		const std::vector< Vertex >& neighbours = GetNeighbours( aVertex);
 		for (const Vertex& vertex : neighbours)
 		{
 			connections.push_back( Edge( aVertex, vertex));
@@ -88,23 +84,19 @@ namespace PathAlgorithm
 	 *
 	 */
 	Path AStar::search(	const Point& aStartPoint,
-						const Point& aGoalPoint,
-						std::vector<Edge> edges
-						/*const Size& aRobotSize*/)
+						const Point& aGoalPoint)
 	{
 		Vertex start( aStartPoint);
 		Vertex goal( aGoalPoint);
 
-		Path path = AStar::search( start, goal,edges/*, aRobotSize*/);
+		Path path = AStar::search( start, goal);
 		return path;
 	}
 	/**
 	 *
 	 */
-	Path AStar::search( Vertex aStart,
-						const Vertex& aGoal,
-						std::vector<Edge> edges
-						/*const Size& aRobotSize*/)
+	Path AStar::search(Vertex aStart,
+						const Vertex& aGoal)
 	{
 		getOS().clear();
 		getCS().clear();
@@ -133,7 +125,7 @@ namespace PathAlgorithm
 				addToClosedSet( current);
 				removeFirstFromOpenSet();
 
-				const std::vector< Edge >& connections = GetNeighbourConnections( current, edges /*radius*/);
+				const std::vector< Edge >& connections = GetNeighbourConnections( current);
 
 				for (const Edge& connection : connections)
 				{
@@ -293,17 +285,6 @@ namespace PathAlgorithm
 							 });
 	}
 
-
-	Vertex& AStar::findInOpenSetbyName(std::string vertexName)
-	{
-		auto result = std::find_if(openSet.begin(),openSet.end(),[vertexName](const Vertex& rhs)
-				{
-					return rhs.name == vertexName;
-				});
-		if(result==std::end(openSet)) throw std::runtime_error("Vertex not found with given name: " + vertexName);
-
-		return *result;
-	}
 	/**
 	 *
 	 */

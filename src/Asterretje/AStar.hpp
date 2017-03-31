@@ -18,24 +18,11 @@ namespace PathAlgorithm
 			/**
 			 *
 			 */
-			Vertex(	double anX,
-					double anY
-					) :
-						name(""),
-						phi1( anX),
-						phi2( anY),
-						phi3(0),
-						actualCost( 0.0),
-						heuristicCost( 0.0)
-			{
-			}
 
-			Vertex(	std::string aName,
-					double anPh1,
+			Vertex( double anPh1,
 					double anPh2,
 					double anPh3
 					) :
-						name(aName),
 						phi1(anPh1),
 						phi2(anPh2),
 						phi3(anPh3),
@@ -43,50 +30,13 @@ namespace PathAlgorithm
 						heuristicCost( 0.0)
 			{
 			}
-			Vertex(	std::string aName,
-					double anX,
-					double anY
-					) :
-						name(aName),
-						phi1( anX),
-						phi2( anY),
-						phi3( 42),
-						actualCost( 0.0),
-						heuristicCost( 0.0)
-			{
-			}
-/*
-			Vertex(	std::string aName,
-					double anX,
-					double anY,
-					int cost
-					) :
-						name(aName),
-						phi1( anX),
-						phi2( anY),
-						phi3(66),
-						actualCost( cost),
-						heuristicCost( 0.0)
-			{
-			}*/
 			/**
 			 *
 			 */
 			Vertex(const Point& aPoint) :
-				name(""),
 				phi1( aPoint.x),
 				phi2( aPoint.y),
-				phi3(0),
-				actualCost( 0.0),
-				heuristicCost( 0.0)
-			{
-			}
-
-			Vertex(std::string aName,const Point& aPoint) :
-				name(""),
-				phi1( aPoint.x),
-				phi2( aPoint.y),
-				phi3(0),
+				phi3( aPoint.z),
 				actualCost( 0.0),
 				heuristicCost( 0.0)
 			{
@@ -96,7 +46,7 @@ namespace PathAlgorithm
 			 */
 			Point asPoint() const
 			{
-				return Point( phi1, phi2);
+				return Point( phi1, phi2 ,phi3);
 			}
 			/**
 			 *
@@ -115,11 +65,6 @@ namespace PathAlgorithm
 			 */
 			bool lessId( const Vertex& aVertex) const
 			{
-/*				if(phi1 < aVertex.phi1 && phi2 < aVertex.phi2) return true;
-				//if(phi1 < aVertex.phi1) return true;
-				//if(phi1 == aVertex.phi1) return phi2 < aVertex.phi2;
-				if(phi1 == aVertex.phi1 && phi2 == aVertex.phi2) return phi3 < aVertex.phi3;
-				*/
 				if(phi1 < aVertex.phi1) return true;
 				if(phi1 == aVertex.phi1){
 					if(phi2 == aVertex.phi2){
@@ -140,7 +85,6 @@ namespace PathAlgorithm
 				return phi1 == aVertex.phi1 && phi2 == aVertex.phi2 && phi3 == aVertex.phi3;
 			}
 
-			std::string name;
 			double phi1;
 			double phi2;
 			double phi3;
@@ -234,7 +178,7 @@ namespace PathAlgorithm
 	inline std::ostream& operator<<( 	std::ostream& os,
 										const Vertex & aVertex)
 	{
-		return os << aVertex.name<<": " << "(" << aVertex.phi1 << "," << aVertex.phi2 << "," << aVertex.phi3 << "), " << aVertex.actualCost << " " << aVertex.heuristicCost;
+		return os << "node"<<": " << "(" << aVertex.phi1 << "," << aVertex.phi2 << "," << aVertex.phi3 << "), " << aVertex.actualCost << " " << aVertex.heuristicCost;
 	}
 	/**
 	 *
@@ -264,16 +208,12 @@ namespace PathAlgorithm
 			 *
 			 */
 			Path search(const Point& aStartPoint,
-						const Point& aGoalPoint,
-						std::vector<Edge> edges
-						/*const Size& aRobotSize*/);
+						const Point& aGoalPoint);
 			/**
 			 *
 			 */
 			Path search(Vertex aStart,
-						const Vertex& aGoal,
-						std::vector<Edge> edges
-						/*const Size& aRobotSize*/);
+						const Vertex& aGoal);
 			/**
 			 *
 			 */
@@ -291,7 +231,6 @@ namespace PathAlgorithm
 			 */
 			OpenSet::iterator findInOpenSet( const Vertex& aVertex);
 
-			Vertex& findInOpenSetbyName(std::string vertexName);
 			/**
 			 *
 			 */
