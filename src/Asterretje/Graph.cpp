@@ -51,7 +51,7 @@ void Graph::printVertex()
 }
 
 void Graph::findShortestPath(std::string startVertex, std::string goalVertex)
-{
+{;
 	PathAlgorithm::Vertex start = findVertexbyName(startVertex);
 	PathAlgorithm::Vertex goal =  findVertexbyName(goalVertex);
 	auto result = a.search(start,goal,e);

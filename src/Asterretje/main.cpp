@@ -25,13 +25,11 @@ int main(int argc, char **argv)
 
 
 
-<<<<<<< HEAD
-		std::cout<<"hello_world1"<<std::endl;
-		g.findShortestPath("(0,0)","(10,10)");
-=======
-		std::cout<<"hello_world"<<std::endl;
+
+		std::cout<<"hello_world2"<<std::endl;
 		g.findShortestPath("(1,0)","(50,10)");
->>>>>>> master
+
+
 
 
 
