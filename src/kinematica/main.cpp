@@ -41,15 +41,12 @@ std::pair<double,double> forward_kinematic(double x0,
 
 }
 
-const double l1 = 4;
-const double l2 = 4;
-const double l3 = 4;
 /**
  * Deze functie berekent de Jacobi matrix oftewel de afgeleide van de foreward kinematics
- * Deze functie werkt alleen met 3DOF robot vandaar de hard gecodeerde values
+ * Deze functie werkt alleen met 3DOF robot vandaar de hard gecodeerde matrixen
  */
 
-Matrix<2,3,double> calculateJacobiMatrix(Matrix<2,1,double> coordinates,Matrix<3,1,double> angles)
+Matrix<2,3,double> calculateJacobiMatrix(Matrix<2,1,double> coordinates,Matrix<3,1,double> angles,double l1, double l2, double l3)
 {
 	 Matrix<2,3,double> result;
 
@@ -62,32 +59,32 @@ Matrix<2,3,double> calculateJacobiMatrix(Matrix<2,1,double> coordinates,Matrix<3
   	 result.at(1).at(2)  = l3 * -std::sin((angles.at(0).at(0) + angles.at(1).at(0) + angles.at(2).at(0))* PI / 180.0);
 
   	 return result;
+
 }
-int main(int argc, char **argv)
+
+/*
+ * Deze functie berekent de benodige hoeken voor de opgegeven coordinaten.
+ * Hiervoor is de huidige hoeken nodig.
+ */
+Matrix<3,1,double> inverse_kinematica(double x0, double y0,double beta, double precision,Matrix<3,1,double> armReach,Matrix<3,1,double> aCurrentPoseAngles,
+						Matrix<2,1,double> g)
 {
-	double x0 = 0.0;
-	double y0 = 0.0;
-	double beta = 0.5;
-	double precision = 0.1;
-	Matrix<3,1,double> currentPose ({45,45,45});
+	const double l1 = armReach.at(0).at(0);
+	const double l2 = armReach.at(1).at(0);
+	const double l3 = armReach.at(2).at(0);
+
+	Matrix<3,1,double> currentPose (aCurrentPoseAngles);
 
 	auto result = forward_kinematic(x0,y0,l1,currentPose.at(0).at(0),l2,currentPose.at(1).at(0),l3,currentPose.at(2).at(0));
 
     Matrix<2,1,double> e({result.first,result.second});
-	Matrix<2,1,double> g({8.0,8.0});
 
 	if(std::pow(g.at(0).at(0),2) + std::pow(g.at(1).at(0),2) > std::pow((l1+l2+l3),2) ) throw std::runtime_error("destination can never be reached because arm is not long enough");
 
-	std::cout<<e<<std::endl;
-	std::cout<<g<<std::endl;
-
-	int  i = 0 ;
-
 	while(!e.approxEqual(g,precision))
 	{
-		++i;
 		//stap1 compute jacobi matrix
-		Matrix<2,3,double> jacobiMatrix = calculateJacobiMatrix(e,currentPose); // resultaat van jacobijnse kom hier in. Jacobijn is afgeleide van forward_kinematic
+		Matrix<2,3,double> jacobiMatrix = calculateJacobiMatrix(e,currentPose,l1,l2,l3); // resultaat van jacobijnse kom hier in. Jacobijn is afgeleide van forward_kinematic
 		//std::cout<<jacobiMatrix<<std::endl;
 
 		//stap2 using Moore–Penrose pseudoinverse  (A+=A*(AA*)-1)
@@ -111,10 +108,22 @@ int main(int argc, char **argv)
 		e = {coordinates.first,coordinates.second};
 
 	}
-	std::cout<<i<<std::endl;
-		return 0;
+	return currentPose;
 }
+int main(int argc, char **argv)
+{
+	double x0 = 0.0;
+	double y0 = 0.0;
+	double beta = 0.5;
+	double precision = 0.1;
+	Matrix<3,1,double> currentPose ({45,45,45});
+	Matrix<2,1,double> g({8.0,8.0});
+	Matrix<3,1,double> armReach({4,4,4});
 
+	Matrix<3,1,double> foundAngles = inverse_kinematica(x0,y0,beta,precision,armReach,currentPose,g);
 
+	std::cout<<foundAngles<<std::endl;
 
+	return 0;
+}
 
