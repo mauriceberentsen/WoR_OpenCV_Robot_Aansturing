@@ -31,7 +31,57 @@
 Voor de eindopdracht van WoR-Robots is er de opdracht om een applicatie te leveren die aan de hand van een simpele TUI (Text User Interface) items kan oppakken en op een opgegeven plek neerleggen. Om deze opdracht uit te kunnen voeren wordt
 \href{http://www.ros.org}{ ROS (Robot Operating System)} gebruikt om de arm aan te sturen, en er wordt gebruik gemaakt van \href{http://www.opencv.org}{OpenCV} voor de beeldherkenning. Alle code die door de student geschreven wordt zal bestaan uit C++17 
 \section{Applicatie design}
+\clearpage
 
+\section{jacobein 4 dof naar 3 dimensies}
+
+$ x = x_0 + l_1 \cdot cos(\theta_1) \cdot cos(\theta_0) + l_2 \cdot cos(\theta_1 + \theta_2) \cdot cos(\theta_0) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) \cdot cos(\theta_0)$
+
+$ y = y_0 + l_1 \cdot cos(\theta_1) \cdot sin(\theta_0) + l_2 \cdot cos(\theta_1 + \theta_2) \cdot sin(\theta_0) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) \cdot sin(\theta_0) $
+
+$ z = z_0 + l_1 \cdot sin(\theta_1) + l_2 \cdot sin(\theta_1 + \theta_2) + l_3 \cdot sin(\theta_1 + \theta_2 + \theta_3) $
+
+
+
+
+$
+J =
+\begin{bmatrix}
+\frac{dx}{d\theta_0} & \frac{dx}{d\theta_1} & \frac{dx}{d\theta_2}& \frac{dx}{d\theta_3} \\
+\frac{dy}{d\theta_0} & \frac{dy}{d\theta_1} & \frac{dy}{d\theta_2} & \frac{dy}{d\theta_3} \\
+\frac{dz}{d\theta_0} & \frac{dz}{d\theta_1} & \frac{dz}{d\theta_2} & \frac{dz}{d\theta_3}
+\end{bmatrix}
+$
+
+$\frac{dx}{d\theta_0} = -l_1\cdot cos(\theta_1) \cdot sin(\theta_0) -l_2\cdot  cos(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  cos(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)
+$
+
+ $\frac{dx}{d\theta_1} = -l_1\cdot sin(\theta_1) \cdot cos(\theta_0) -l_2\cdot  sin(\theta_1 + \theta_2) \cdot cos(\theta_0) - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)	
+ $
+
+ $\frac{dx}{d\theta_2} = -l_2\cdot  sin(\theta_1 + \theta_2) \cdot cos(\theta_0) - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)
+ $
+
+ $\frac{dx}{d\theta_3} = - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)	
+ $
+
+ 
+$\frac{dy}{d\theta_0} = -l_1\cdot cos(\theta_1) \cdot cos(\theta_0) -l_2\cdot  cos(\theta_1 + \theta_2) \cdot cos(\theta_0) -l_3\cdot  cos(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0) $
+
+$\frac{dy}{d\theta_1} = -l_1\cdot sin(\theta_1) \cdot sin(\theta_0) -l_2\cdot  sin(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
+
+$\frac{dy}{d\theta_2} =sin(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
+
+$\frac{dy}{d\theta_3} =-l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
+
+$\frac{dz}{d\theta_0} = 0 $
+
+$\frac{dz}{d\theta_1} = l_1 \cdot cos(\theta_1) + l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
+
+$\frac{dz}{d\theta_2} = l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
+
+$\frac{dz}{d\theta_3} = l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
+ 
 \section{Verloop opdracht}
 Bij de start van de opdracht is er eerst besproken hoe de samenwerking moest verlopen. Daar is gekozen voor het gebruik van \href{http://www.github.com}{Github}, deze keuze is gebaseerd op het feit dat het gratis is en het versie beheer bekend is voor de studenten. Vervolgens is er geïnventariseerd wat er al beschikbaar was. Zo is er door Berentsen, M al een applicatie geschreven die de figuren kan herkennen en in kaart brengen en door Tunc, A een applicatie die via ROS de arm kan aansturen. Deze zijn met een lichte aanpassing direct bruikbaar in deze opdracht en worden dan ook beiden gebruikt.
 \end{document}
