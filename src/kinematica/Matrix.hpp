@@ -469,7 +469,12 @@ Matrix<ROWS,COLS,T> Matrix<ROWS,COLS,T>::inverse()
 	Matrix<ROWS,2*COLS,T> inputConcatenated = this->concatenate();
 
 	//GAUSSIAN elimination
-	if(!inputConcatenated.isDeterminant()) throw std::runtime_error("this matrix is not invertible, the determinant is 0 ");
+	if(!inputConcatenated.isDeterminant())
+	{
+		throw std::runtime_error("this matrix is not invertible, the determinant is 0."
+				                 " Performing gaus elimination resulted the following matrix" +
+				                 inputConcatenated.to_string());
+	}
 
 	for(std::size_t row = 0; row<inputConcatenated.getRowSize(); ++row)
 	{

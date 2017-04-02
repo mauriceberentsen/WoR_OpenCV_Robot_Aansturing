@@ -49,17 +49,17 @@ const double l3 = 2;
  * Deze functie werkt alleen met 3DOF robot vandaar de hard gecodeerde values
  */
 
-Matrix<2,3,double> calculateJacobiMatrix(Matrix<1,2,double> coordinates,Matrix<1,3,double> angles)
+Matrix<2,3,double> calculateJacobiMatrix(Matrix<2,1,double> coordinates,Matrix<3,1,double> angles)
 {
 	 Matrix<2,3,double> result;
 
-  	 result.at(0).at(0)  = l1 * std::cos(angles[0][0] * PI / 180.0) + l2 * std::cos((angles[0][0] + angles[0][1]) * PI / 180.0) + l3 * std::cos((angles[0][0] + angles[0][1] + angles[0][2]) * PI / 180.0);
-  	 result.at(0).at(1)  = l2 * std::cos((angles[0][0] + angles[0][1])* PI / 180.0) + l3 * std::cos((angles[0][0] + angles[0][1] + angles[0][2])* PI / 180.0);
-  	 result.at(0).at(2)  = l3 * std::cos((angles[0][0] + angles[0][1] + angles[0][2])* PI / 180.0);
+  	 result.at(0).at(0)  = l1 * std::cos(angles[0][0] * PI / 180.0) + l2 * std::cos((angles[0][0] + angles[1][0]) * PI / 180.0) + l3 * std::cos((angles[0][0] + angles[1][0] + angles[2][0]) * PI / 180.0);
+  	 result.at(0).at(1)  = l2 * std::cos((angles[0][0] + angles[1][0])* PI / 180.0) + l3 * std::cos((angles[0][0] + angles[1][0] + angles[2][0])* PI / 180.0);
+  	 result.at(0).at(2)  = l3 * std::cos((angles[0][0] + angles[1][0] + angles[2][0])* PI / 180.0);
 
-  	 result.at(1).at(0)  = l1 * -std::sin(angles[0][0] * PI / 180.0) + l2 * -std::sin((angles[0][0] + angles[0][1]) * PI / 180.0) + l3 * -std::sin((angles[0][0] + angles[0][1] + angles[0][2]) * PI / 180.0);
-  	 result.at(1).at(1)  = l2 * -std::sin((angles[0][0] + angles[0][1])* PI / 180.0) + l3 * -std::sin((angles[0][0] + angles[0][1] + angles[0][2])* PI / 180.0);
-  	 result.at(1).at(2)  = l3 * -std::sin((angles[0][0] + angles[0][1] + angles[0][2])* PI / 180.0);
+  	 result.at(1).at(0)  = l1 * -std::sin(angles[0][0] * PI / 180.0) + l2 * -std::sin((angles[0][0] + angles[1][0]) * PI / 180.0) + l3 * -std::sin((angles[0][0] + angles[1][0] + angles[2][0]) * PI / 180.0);
+  	 result.at(1).at(1)  = l2 * -std::sin((angles[0][0] + angles[1][0])* PI / 180.0) + l3 * -std::sin((angles[0][0] + angles[1][0] + angles[2][0])* PI / 180.0);
+  	 result.at(1).at(2)  = l3 * -std::sin((angles[0][0] + angles[1][0] + angles[2][0])* PI / 180.0);
 
   	 return result;
 }
@@ -67,51 +67,49 @@ int main(int argc, char **argv)
 {
 	double x0 = 0.0;
 	double y0 = 0.0;
-	double beta = 1;
+	double beta = 0.5;
 	double precision = 0.1;
-	Matrix<1,3,double> currentPose ({45,45,45});
+	Matrix<3,1,double> currentPose ({45,45,45});
 
-	auto result = forward_kinematic(x0,y0,l1,currentPose[0][0],l2,currentPose[0][1],l3,currentPose[0][2]);
+	auto result = forward_kinematic(x0,y0,l1,currentPose[0][0],l2,currentPose[1][0],l3,currentPose[2][0]);
 
-    Matrix<1,2,double> e({result.first,result.second});
-	Matrix<1,2,double> g({10,10});
+    Matrix<2,1,double> e({result.first,result.second});
+	Matrix<2,1,double> g({10,10});
 
 	std::cout<<e<<std::endl;
 	std::cout<<g<<std::endl;
 
+	int  i = 0 ;
 
-	//while(!e.approxEqual(g,precision))
-	//{
+	while(!e.approxEqual(g,precision))
+	{
+		std::cout<<i<<std::endl;
+		++i;
 		//stap1 compute jacobi matrix
-
 		Matrix<2,3,double> jacobiMatrix = calculateJacobiMatrix(e,currentPose); // resultaat van jacobijnse kom hier in. Jacobijn is afgeleide van forward_kinematic
 		//std::cout<<jacobiMatrix<<std::endl;
 
-		//stap2
-		Matrix<2,2,double> squaredJacobiMatrix = jacobiMatrix * jacobiMatrix.transpose();
-		//std::cout<<squaredJacobiMatrix<<std::endl;
-
-		Matrix<2,2,double> jacobiInverse = squaredJacobiMatrix.inverse();
+		//stap2 using Moore–Penrose pseudoinverse  (A†=(AT * A)−1 * AT)
+		Matrix<3,2,double> jacobiInverse = (jacobiMatrix.transpose() * jacobiMatrix).inverse() * jacobiMatrix.transpose();
 		//std::cout<<jacobiInverse<<std::endl;
 
 		//stap3
-		Matrix<1,2,double> deltaE = (g-e) * beta;
+		Matrix<2,1,double> deltaE = (g-e) * beta;
 		//std::cout<<deltaE<<std::endl;
 
 		//stap4
-		Matrix<2,1,double> deltaPose = jacobiInverse * deltaE.transpose();
+		Matrix<3,1,double> deltaPose = jacobiInverse * deltaE;
 		//std::cout<<deltaPose<<std::endl;
 
 		//stap5
-		auto newPose = currentPose + deltaPose;
-
-		//currentPose = newPose;
+		currentPose = currentPose + deltaPose;
 
 		//stap6 compute new e vector
-		//auto result = forward_kinematic(x0,y0,l1,currentPose[0][0],l2,currentPose[0][1],l3,currentPose[0][2]);
+		auto coordinates= forward_kinematic(x0,y0,l1,currentPose[0][0],l2,currentPose[0][1],l3,currentPose[0][2]);
 
+		e = {coordinates.first,coordinates.second};
 
-	//}
+	}
 		return 0;
 }
 
