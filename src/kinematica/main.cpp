@@ -41,9 +41,9 @@ std::pair<double,double> forward_kinematic(double x0,
 
 }
 
-const double l1 = 2;
+const double l1 = 4;
 const double l2 = 4;
-const double l3 = 2;
+const double l3 = 4;
 /**
  * Deze functie berekent de Jacobi matrix oftewel de afgeleide van de foreward kinematics
  * Deze functie werkt alleen met 3DOF robot vandaar de hard gecodeerde values
@@ -74,9 +74,9 @@ int main(int argc, char **argv)
 	auto result = forward_kinematic(x0,y0,l1,currentPose.at(0).at(0),l2,currentPose.at(1).at(0),l3,currentPose.at(2).at(0));
 
     Matrix<2,1,double> e({result.first,result.second});
-	Matrix<2,1,double> g({8.0,1.0});
+	Matrix<2,1,double> g({8.0,8.0});
 
-	if(g.at(0).at(0) > l1+l2+l3 ) throw std::runtime_error("x pos can never be reached because arm is not long enough");
+	if(std::pow(g.at(0).at(0),2) + std::pow(g.at(1).at(0),2) > std::pow((l1+l2+l3),2) ) throw std::runtime_error("destination can never be reached because arm is not long enough");
 
 	std::cout<<e<<std::endl;
 	std::cout<<g<<std::endl;
