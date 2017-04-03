@@ -6,6 +6,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{listings}
 \author{Berentsen M.W.J.}
 \title{WoR-Robots Applicatie}
 \usepackage{titling}
@@ -29,58 +30,67 @@
 \clearpage
 \section{Inleiding}
 Voor de eindopdracht van WoR-Robots is er de opdracht om een applicatie te leveren die aan de hand van een simpele TUI (Text User Interface) items kan oppakken en op een opgegeven plek neerleggen. Om deze opdracht uit te kunnen voeren wordt
-\href{http://www.ros.org}{ ROS (Robot Operating System)} gebruikt om de arm aan te sturen, en er wordt gebruik gemaakt van \href{http://www.opencv.org}{OpenCV} voor de beeldherkenning. Alle code die door de student geschreven wordt zal bestaan uit C++17 
+\href{http://www.ros.org}{ ROS (Robot Operating System)} gebruikt om de arm aan te sturen, en er wordt gebruik gemaakt van \href{http://www.opencv.org}{OpenCV} voor de beeldherkenning. Alle code die door de student geschreven wordt zal bestaan uit C++11
 \section{Applicatie design}
-\clearpage
+\subsection{Het berekenen van het pad}
 
-\section{Jacobein 4 dof naar 3 dimensies}
+Om het pad te bereken die de robotarm moet afleggen moet er eerst een configuratie gevonden worden. Dit omdat de robot niet aangestuurd wordt met co\"ordinaten maar hij de hoeken van de arm moet ontvangen. Vervolgens kan er met het A* algoritme berekend wordt het pad naar deze configuratie berekend. 
 
-$ x = x_0 + l_1 \cdot cos(\theta_1) \cdot cos(\theta_0) + l_2 \cdot cos(\theta_1 + \theta_2) \cdot cos(\theta_0) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) \cdot cos(\theta_0)$
-
-$ y = y_0 + l_1 \cdot cos(\theta_1) \cdot sin(\theta_0) + l_2 \cdot cos(\theta_1 + \theta_2) \cdot sin(\theta_0) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) \cdot sin(\theta_0) $
-
-$ z = z_0 + l_1 \cdot sin(\theta_1) + l_2 \cdot sin(\theta_1 + \theta_2) + l_3 \cdot sin(\theta_1 + \theta_2 + \theta_3) $
+\subsubsection{Het berekenen van de nieuwe configuratie}
+Voor het berekenen van de configuratie word er eerst een twee dimensionaal punt bepaald vanaf het zijaanzicht. In het twee dimensionale stelsel wordt er gewerkt met co\"ordinaten X en Y. Deze co\"odinaten zetten we om naar een configuratie met behulp van het volgende algoritme dit daarna per punt wordt behandeld.
 
 
+while ( $e$ is too far from $g$)\\
+Compute $J(e,\theta)$ for the current pose $\theta$\\
+Compute $J^{-1}$\\     
+$\Delta e = \beta(g-e)$ \\ 
+$\Delta \theta  = J^-1 \times \Delta e$\\
+$\theta_{nieuw} = \theta_{oud} + \Delta \theta$\\
+Compute new e vector \\
+
+\begin{enumerate}
+	\item while ( $e$ is too far from $g$)\\
+	Zolang het gevonden eindpunt $e$ nog niet ongeveer gelijk is aan het doel $g$ wordt het volgende uitgevoerd.
+	
+	Voor het berekenen van de configuratie naar een x,y co\"ordinaat wordt het forward kinematics gebruikt. Dit levert de volgende twee formules op:\\
+	$x = x_0 + l_1 \cdot sin(\theta_1) + l_2 \cdot sin(\theta_1 + \theta_2) + l_3 \cdot sin(\theta_1 + \theta_2 + \theta_3)$\\
+	$y = y_0 + l_1 \cdot cos(\theta_1) + l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3)$
+	\item Compute $J(e,\theta)$ for the current pose $\theta$\\
+	De Jacobi wordt afgeleid vanuit de ingaande onafhankelijke variabelen $x , y$ en de uitgaande afhankelijke variablen $\theta_1 ,\theta_2 ,\theta_3$ ofwel $\mathbb{R}^3 \rightarrow \mathbb{R}^2$. Dit levert de volgende Jacobi matrix op:
+	$
+	J =
+	\begin{bmatrix}
+	\frac{dx}{d\theta_0} & \frac{dx}{d\theta_1} & \frac{dx}{d\theta_2} \\
+	\frac{dy}{d\theta_0} & \frac{dy}{d\theta_1} & \frac{dy}{d\theta_2} \\
+	\end{bmatrix}
+	$
+	
+	De afgeleiden die in deze matrix staan worden op de volgende manier berekend:\\
+	$\frac{dx}{d\theta_0} = l_1 \cdot cos(\theta_1) + l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3)$\\
+	$\frac{dx}{d\theta_1} = l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3)$\\
+    $\frac{dx}{d\theta_2} = l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3)$\\
+	$\frac{dy}{d\theta_0} = -l_1 \cdot sin(\theta_1) -l_2 \cdot sin(\theta_1 + \theta_2) -l_3 \cdot sin(\theta_1 + \theta_2 + \theta_3)$\\
+    $\frac{dy}{d\theta_1} = -l_2 \cdot sin(\theta_1 + \theta_2) -l_3 \cdot sin(\theta_1 + \theta_2 + \theta_3) $\\
+    $\frac{dy}{d\theta_2} =  -l_3 \cdot sin(\theta_1 + \theta_2 + \theta_3) $\\
+    \item Compute $J^{-1}$\\ 
+    Om de inverse van deze matrix te berekenen word de pseudo inverse gebruikt. Dit resulteert in de volgende formule: $J^- = A^T \cdot (A \cdot A^T)^- $
+    \item $\Delta e = \beta(g-e)$ \\ 
+    $\Delta e = $ doel co\"ordinaten - huidige co\"ordinaten $(g - e ) \cdot \beta$
+    \item $\Delta \theta  = J^- \cdot \Delta e$\\
+    Hier wordt de inverse van de Jacobi ($J^-$) uit stap 3 maal het verschil van de co\"odinaten ($\Delta e$) uit stap 4 gedaan om het schil in de configuratie te benaderen.    
+    \item $\theta_{nieuw} = \theta_{oud} + \Delta \theta$\\
+    Tel hier de het verschil in de configuratie bij de oude configuratie bij op.
+    \item Compute new e vector \\
+    Gebruik forward kinematics om te controleren of de gevonden configuratie klopt
+
+\end{enumerate}          
 
 
-$
-J =
-\begin{bmatrix}
-\frac{dx}{d\theta_0} & \frac{dx}{d\theta_1} & \frac{dx}{d\theta_2}& \frac{dx}{d\theta_3} \\
-\frac{dy}{d\theta_0} & \frac{dy}{d\theta_1} & \frac{dy}{d\theta_2} & \frac{dy}{d\theta_3} \\
-\frac{dz}{d\theta_0} & \frac{dz}{d\theta_1} & \frac{dz}{d\theta_2} & \frac{dz}{d\theta_3}
-\end{bmatrix}
-$
 
-$\frac{dx}{d\theta_0} = -l_1\cdot cos(\theta_1) \cdot sin(\theta_0) -l_2\cdot  cos(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  cos(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)
-$
 
- $\frac{dx}{d\theta_1} = -l_1\cdot sin(\theta_1) \cdot cos(\theta_0) -l_2\cdot  sin(\theta_1 + \theta_2) \cdot cos(\theta_0) - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)	
- $
 
- $\frac{dx}{d\theta_2} = -l_2\cdot  sin(\theta_1 + \theta_2) \cdot cos(\theta_0) - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)
- $
 
- $\frac{dx}{d\theta_3} = - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)	
- $
 
- 
-$\frac{dy}{d\theta_0} = -l_1\cdot cos(\theta_1) \cdot cos(\theta_0) -l_2\cdot  cos(\theta_1 + \theta_2) \cdot cos(\theta_0) -l_3\cdot  cos(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0) $
-
-$\frac{dy}{d\theta_1} = -l_1\cdot sin(\theta_1) \cdot sin(\theta_0) -l_2\cdot  sin(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
-
-$\frac{dy}{d\theta_2} = -l_2 \cdot sin(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
-
-$\frac{dy}{d\theta_3} =-l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
-
-$\frac{dz}{d\theta_0} = 0 $
-
-$\frac{dz}{d\theta_1} = l_1 \cdot cos(\theta_1) + l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
-
-$\frac{dz}{d\theta_2} = l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
-
-$\frac{dz}{d\theta_3} = l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
  
 \section{Verloop opdracht}
 Bij de start van de opdracht is er eerst besproken hoe de samenwerking moest verlopen. Daar is gekozen voor het gebruik van \href{http://www.github.com}{Github}, deze keuze is gebaseerd op het feit dat het gratis is en het versie beheer bekend is voor de studenten. Vervolgens is er geïnventariseerd wat er al beschikbaar was. Zo is er door Berentsen, M al een applicatie geschreven die de figuren kan herkennen en in kaart brengen en door Tunc, A een applicatie die via ROS de arm kan aansturen. Deze zijn met een lichte aanpassing direct bruikbaar in deze opdracht en worden dan ook beiden gebruikt.
