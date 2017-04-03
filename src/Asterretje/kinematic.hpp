@@ -77,9 +77,9 @@ Point calculate_postition(const Configuration& myConfig)
                         +  (myConfig.length3 * cos((myConfig.phi1 + myConfig.phi2 + myConfig.phi3) * PI/180)) * cos(myConfig.phi0 * PI/180);
 
   currentPosition.y = myConfig.currentPos.y
-		  	  	  	    +  (myConfig.length1 * sin(myConfig.phi1 * PI/180) * sin(myConfig.phi0 * PI/180))
-                        +  (myConfig.length2 * sin((myConfig.phi1 + myConfig.phi2) * PI/180)) * sin(myConfig.phi0 * PI/180)
-                        +  (myConfig.length3 * sin((myConfig.phi1 + myConfig.phi2 + myConfig.phi3)) * PI/180) * sin(myConfig.phi0 * PI/180);
+		  	  	  	    +  (myConfig.length1 * cos(myConfig.phi1 * PI/180) * sin(myConfig.phi0 * PI/180))
+                        +  (myConfig.length2 * cos((myConfig.phi1 + myConfig.phi2) * PI/180)) * sin(myConfig.phi0 * PI/180)
+                        +  (myConfig.length3 * cos((myConfig.phi1 + myConfig.phi2 + myConfig.phi3)) * PI/180) * sin(myConfig.phi0 * PI/180);
 
   currentPosition.z = myConfig.currentPos.z
 		                +  (myConfig.length1 * sin(myConfig.phi1 * PI/180)
