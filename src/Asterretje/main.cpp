@@ -50,9 +50,7 @@ int main(int argc, char **argv)
 			Matrix<2,1,double> cur({50, -70});
 			Matrix<2,1,double> gtest({g[0][0],g[1][0]});
 
-			auto deltaTest =  gtest - cur;
-			deltaTest /= 2;
-			cur += deltaTest;
+			cur= (cur+gtest) * 0.5; //middenpunt berekening;
 
 			std::cout<<foundAngles<<std::endl;
 			std::cout<<found.first << "|" << found.second <<std::endl;
