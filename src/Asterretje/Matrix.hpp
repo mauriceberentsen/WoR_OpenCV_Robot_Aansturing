@@ -1,575 +1,670 @@
 /*
  * Matrix.hpp
  *
- *  Created on: 9 Feb 2017
- *      Author: Thomas
+ *  Created on: Mar 5, 2017
+ *      Author: Agit
  */
 
 #ifndef MATRIX_HPP_
 #define MATRIX_HPP_
 
 #include <array>
-#include <cstdint>
-#include <initializer_list>
 #include <iostream>
-#include <vector>
+#include <algorithm>
+#include <cmath>
 
-
-template <std::size_t W, std::size_t H, class T = int> 
+//ROWS = hoe hoog de matrix wordt (height)
+//COLS = hoe breedt de matrix wordt (width)
+//3x4 matrix betekent dus 3 rows en 4 columns dus 3 hoog en 4 breed
+template <const std::size_t ROWS = 0 ,const std::size_t COLS = 0, typename T =long>
 class Matrix
 {
-  public:
-    static_assert(std::is_arithmetic<T>::value, "Value T must be integral T or a floating-point T.");
+public:
+	//intergal is gehele getalen
+	static_assert(std::is_arithmetic<T>::value,"T must be integral type or a floating-point type");
 
-    Matrix(T defaultValue = 0);
+	Matrix(T defaultValue = 0);
 
-    Matrix(const std::initializer_list<T>& list);
+	Matrix(const std::initializer_list<T>& list);
 
-    Matrix(const std::initializer_list<std::initializer_list<T>>& list);
+	Matrix(const std::initializer_list<std::initializer_list<T>>& list);
 
-    Matrix(const std::array<std::array<T, W>, H>& array);
-
-    Matrix(const Matrix<W, H, T>& other);
-
-    std::array<T, W> at(std::size_t height) const;
-
-    T at(std::size_t height, std::size_t width) const;
-
-    std::array<T, W>& operator[](const std::size_t idx);
-
-    const Matrix<W, H, T>& operator=(const Matrix<W, H, T>& other);
-
-    /*
-     * Can't assign a matrix of a different size, this returned.
-     */
-    template <std::size_t aWidth, std::size_t aHeight, class aT>
-    const Matrix operator=(const Matrix<aWidth, aHeight, aT>& other);
-
-    /*
-     * Compares 2 matricies. Always returns false by comparing matricies with
-     * different sizes.
-     */
-    template <std::size_t aWidth, std::size_t aHeight, class aT>
-    bool operator==(const Matrix<aWidth, aHeight, aT>& other);
-
-    /*
-     *Returns the amount of elements in the matrix.
-     */
-    inline std::size_t size() const
-    {
-        return W * H;
-    }
-
-    inline std::size_t getWidth() const
-    {
-        return W;
-    }
-
-    inline std::size_t getHeight() const
-    {
-        return H;
-    }
-
-    /************************************************************
-     * Matrix functions.
-     ************************************************************/
-
-    Matrix<H, W, T> transpose() const;
-
-    Matrix<W, H, T> identity() const;
-
-    template <class aT = T>
-    Matrix<W, H, T> pointWiseMultiply(const T value);
-
-    std::string to_string() const;
-
-    /**
-     * @brief use gauss elimination to calculate the inverse of a square matrix
-     * private function sort rows
-     * 1 vind de correcte bovenste rij dit is de eerste rij die met 1 begint en anders de grootste
-     * 2 swap deze rij naar de bovenste rij
-     * private function devide_row_to_one
-     * 3 maak van de bovenste rij het eerste element 1 door de rij te delen door het eerste element
-     * private function substract cols_to_zero
-     * 4 maak van de overige rijen het eerste element 0 door de rij_x - eerste rij x het eerste element van de rij_x
-     * uses a for loop based on height
-     * 5 herhaal bovenenste rij wordt volgende rij en kijken naar het volgende element
-     * @return the inverse of the current matrix
-     */
-    Matrix<W, H, T> inverse();
-
-  private:
-    Matrix<W, H, T> sort_rows(Matrix<W, H, T>& lhs,Matrix<W, H, T>& rhs, unsigned int index);
-
-    Matrix<W, H, T> substract_cols_to_zero(Matrix<W, H, T>& lhs,Matrix<W, H, T>& rhs, unsigned long index);
-
-    Matrix<W, H, T> divide_row_to_one(Matrix<W, H, T>& lhs,	Matrix<W, H, T>& rhs, unsigned long row);
-  public:
+	Matrix(const Matrix<ROWS,COLS,T>& aMatrix);
 
 
     /************************************************************
-     * Scalar operations.
+     * Matrix operators: asign and comparison
      ************************************************************/
+	const Matrix<ROWS,COLS,T>& operator=(const Matrix<ROWS,COLS,T>& aMatrix);
 
-    Matrix<W, H, T>& operator*=(const T& scalar);
-
-    Matrix<W, H, T> operator*(const T& scalar) const;
-
-    template <class aT = T>
-    Matrix<W, H, T>& operator/=(const aT& scalar);
-
-    template <class aT = T>
-    Matrix<W, H, T> operator/(const aT& scalar) const;
+	bool operator==(const Matrix<ROWS,COLS,T>& aMatrix) const;
 
     /************************************************************
-     * Pointwise operations.
+     * Matrix operators for scalars
      ************************************************************/
+	template<typename T2> //moet ook voor rhs een type geven want anders kan je bijv geen int * double doen.
+	Matrix<ROWS,COLS,T>& operator*=(const T2& scalar);
 
-    Matrix<W, H, T>& operator+=(const T& value);
+	template<typename T2>
+	Matrix<ROWS,COLS,T> operator*(const T2& scalar) const;
 
-    Matrix<W, H, T> operator+(const T& value);
+	template<typename T2>
+	Matrix<ROWS,COLS,T>& operator/=(const T2& scalar);
 
-    template <class aT = T>
-    Matrix<W, H, T>& operator-=(const aT& value);
-
-    template <class aT = T>
-    Matrix<W, H, T> operator-(const aT& value) const;
+	template<typename T2>
+	Matrix<ROWS,COLS,T> operator/(const T2& scalar) const;
 
     /************************************************************
-     * Matrix operations.
+     * Matrix operators for matrix
      ************************************************************/
-    template <std::size_t aWidth, std::size_t aHeight>
-    Matrix<aWidth, H, T>
-    operator*(const Matrix<aWidth, aHeight, T>& other) const;
+	template<std::size_t COLS2, typename T2>
+	Matrix<ROWS,COLS2,T> operator*(const Matrix<COLS,COLS2,T2>& aMatrix) const; //copy
 
-    Matrix<W, H, T>&
-    operator+=(const Matrix<W, H, T>& other);
+	Matrix<ROWS,COLS,T>& operator+=(const Matrix<ROWS,COLS,T>& aMatrix); //no copy
 
-    Matrix<W, H, T>
-    operator+(const Matrix<W, H, T>& other);
+	Matrix<ROWS,COLS,T>& operator-=(const Matrix<ROWS,COLS,T>& aMatrix); //no copy
 
-    Matrix<W, H, T>&
-    operator-=(const Matrix<W, H, T>& other);
+    Matrix<ROWS,COLS,T> operator+(const Matrix<ROWS,COLS,T>& aMatrix) const; //copy
 
-    Matrix<W, H, T> operator-(Matrix<W, H, T>& other);
+    Matrix<ROWS,COLS,T> operator-(const Matrix<ROWS,COLS,T>& aMatrix) const; //copy
 
-    virtual ~Matrix();
 
-  private:
-    std::array<std::array<T, W>, H> innerMatrix;
+    /************************************************************
+     * Matrix functions
+     ************************************************************/
+    Matrix<COLS,ROWS,T> transpose() const;
+
+	//no bounds check
+	std::array<T,COLS>& operator[](const std::size_t rowIndex);
+
+	//bounds check
+	std::array<T,COLS>& at(const std::size_t rowIndex);
+
+	//copy
+	T at(const std::size_t rowIndex, const std::size_t columIndex) const;
+
+    const std::size_t getRowSize() const;
+
+    const std::size_t getColumnSize() const ;
+
+    const  std::size_t getMatrixSize() const;
+
+    const std::string to_string() const;
+
+    Matrix<ROWS,ROWS,T> identity() const;
+
+    bool approxEqual(Matrix<ROWS,COLS,T>& rhs,double precision);
+
+    Matrix<ROWS,COLS,T> inverse();
+
+private:
+	std::array<std::array<T,COLS>,ROWS> matrix; //matrix COLS als inner array omdat ROWS bepaald hoevaak je een array wilt
+
+
+	template <const std::size_t,const std::size_t, typename>
+	friend class Matrix;
+
+    /************************************************************
+     * The following private functions are being used by the inverse functions
+     ************************************************************/
+	//paste identity matrix on the object who calls this object and return the result
+    Matrix<ROWS,2*COLS,T> concatenate ();
+
+	//find the top row
+	std::size_t findTopRow(std::size_t rowPos);
+	//swap the currentRow with the top row
+	void swapRows(std::size_t currentRowPos,std::size_t targetRowPos);
+	//transform the top row to the correct echolon form
+	void correctRowType(std::size_t targetRowPos);
+	//transform all the other rows in the matrix to the correct echolon form
+	void echolonForm(std::size_t startPos);
+
+	//cut the identity matrix from the object who calls this function an return the result
+	//this function must be called last in the inverse() function. This function will result the inverse matrix.
+    Matrix<ROWS,COLS/2,T> deconcatenate ();
+
+
+    //this function finds the determinant by using the Gaussian elimination
+    bool isDeterminant();
+
+    //this function is being used by the isDeterminant();
+    //this function sets the Matrix in echelon form
+    void echolonRowForm(std::size_t startPos);
+
 };
 
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T>::Matrix(T defaultValue)
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+Matrix<ROWS,COLS,T>::Matrix(T defaultValue)
 {
-    for (std::size_t i = 0; i < H; ++i) {
-        innerMatrix.at(i).fill(defaultValue);
-    }
+	for(std::size_t i = 0; i<ROWS; ++i) matrix.at(i).fill(defaultValue);
 }
 
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T>::Matrix(const std::initializer_list<T>& list)
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+Matrix<ROWS,COLS,T>::Matrix(const std::initializer_list<T>& list)
 {
-    if (list.size() != W * H) {
-        throw std::runtime_error("Error: Can't initialize Matrix, "
-                                 "because initalizer list size does "
-                                 "not match template size.");
-    }
+    if (list.size() != ROWS * COLS) throw std::runtime_error{"list size is not equal to the matrix size"};
 
-    auto it = list.begin();
-    for (size_t i = 0; i < H; ++i) {
-        for (size_t j = 0; j < W; ++j) {
-            innerMatrix.at(i % W).at(j) = *it;
-            ++it;
-            ++i;
-        }
-    }
+    size_t i = 0;
+	for(const T* it = list.begin(); it != list.end(); ++it)
+	{
+		size_t pos = std::distance(list.begin(),it);
+		matrix.at(i).at(pos % COLS) = *it;
+		if((pos+1)%COLS==0) ++i;  //check of de volgende pos in een nieuwe rij hoort.
+	}
 }
 
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T>::Matrix(const std::initializer_list<std::initializer_list<T>>& list)
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+Matrix<ROWS,COLS,T>::Matrix(const std::initializer_list<std::initializer_list<T>>& list)
 {
-    if (list.size() != H) {
-        throw std::runtime_error("Error: Can't initialize Matrix, "
-                                 "because initalizer list size does "
-                                 "not match template size.");
-    }
+	if(list.size()!=ROWS) throw std::runtime_error{"amount of given rows in list is not equal to the row size of the matrix"};
 
-    auto it = list.begin();
-    for (size_t i = 0; i < list.size(); ++i) {
-        if (it->size() != W) {
-            throw std::runtime_error("Error: Can't initialize Matrix, "
-                                     "because initalizer list size does "
-                                     "not match template size.");
-        }
+	for(const std::initializer_list<T>* row = list.begin(); row != list.end(); ++row)
+	{
+		if(row->size() != COLS) throw std::runtime_error{"amount of given columns in list is not equal to the column size of the matrix"};
+		size_t rowPos = std::distance(list.begin(), row);
 
-        auto itt = (*it).begin();
-        for (size_t j = 0; j < (*it).size(); ++j) {
-            innerMatrix.at(i).at(j) = *itt;
-            ++itt;
-        }
-        ++it;
-    }
+		for(const T* col = row->begin(); col!=row->end(); ++col)
+		{
+			size_t colPos = std::distance(row->begin(),col);
+
+			matrix.at(rowPos).at(colPos) = *col;
+		}
+	}
 }
 
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T>::Matrix(const std::array<std::array<T, W>, H>& array)
-: innerMatrix(array)
-{
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+Matrix<ROWS,COLS,T>::Matrix(const Matrix<ROWS,COLS,T>& aMatrix):matrix(aMatrix.matrix){}
 
+
+/************************************************************
+ * Matrix operators: asign and comparison
+ ************************************************************/
+
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+const Matrix<ROWS,COLS,T>& Matrix<ROWS,COLS,T>::operator=(const Matrix<ROWS,COLS,T>& aMatrix)
+{
+	if(this!=&aMatrix)
+	{
+		matrix = aMatrix.matrix;
+	}
+	return *this;
 }
 
 
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T>::Matrix(const Matrix<W, H, T>& other)
-    : innerMatrix(other.innerMatrix)
+//ongelijke matrixen hoef je niet te comparen dus alleen op inhoud
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+bool Matrix<ROWS,COLS,T>::operator==(const Matrix<ROWS,COLS,T>& aMatrix) const
 {
-    //        std::cout << __PRETTY_FUNCTION__ << std::endl;
+	return matrix == aMatrix.matrix;
 }
 
-template <std::size_t W, std::size_t H, class T>
-std::array<T, W> Matrix<W, H, T>::at(std::size_t height) const
+/************************************************************
+ * output operator
+ ************************************************************/
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+std::ostream& operator<<(std::ostream& os,const Matrix<ROWS,COLS,T>& rhs)
 {
-    return innerMatrix.at(height);
+	return os<<rhs.to_string();
 }
 
-template <std::size_t W, std::size_t H, class T>
-T Matrix<W, H, T>::at(std::size_t height, std::size_t width) const
+/************************************************************
+ * Matrix operators for scalars
+ ************************************************************/
+
+
+template <std::size_t  ROWS, std::size_t  COLS ,typename T >
+template<typename T2>
+Matrix<ROWS,COLS,T>& Matrix<ROWS,COLS,T>::operator*=(const T2& scalar)
 {
-    return innerMatrix.at(height).at(width);
+	for(std::size_t  i = 0; i<ROWS; ++i)
+	{
+		for(std::size_t  j = 0; j<COLS; ++j)
+		{
+			matrix.at(i).at(j) *=scalar;
+		}
+	}
+	return *this;
 }
 
-template <std::size_t W, std::size_t H, class T>
-std::array<T, W>& Matrix<W, H, T>::operator[](const std::size_t idx)
+template <std::size_t ROWS, std::size_t  COLS ,typename T >
+template<typename T2>
+Matrix<ROWS,COLS,T> Matrix<ROWS,COLS,T>::operator*(const T2& scalar) const
 {
-    return innerMatrix.at(idx);
+	Matrix<ROWS,COLS,T> m(*this);
+
+	for(std::size_t  i = 0; i<ROWS; ++i)
+	{
+		for(std::size_t  j=0; j<COLS; ++j)
+		{
+			m.at(i).at(j) =  scalar * matrix.at(i).at(j);
+		}
+	}
+	return m;
 }
 
-template <std::size_t W, std::size_t H, class T>
-const Matrix<W, H, T>& Matrix<W, H, T>::operator=(const Matrix<W, H, T>& other)
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+template<typename T2>
+Matrix<ROWS,COLS,T>& Matrix<ROWS,COLS,T>::operator/=(const T2& scalar)
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-
-    innerMatrix = other.innerMatrix;
-
-    return *this;
+	for(std::size_t i = 0; i<ROWS; ++i)
+	{
+		for(std::size_t j = 0; j<COLS; ++j)
+		{
+			this->at(i).at(j)/=scalar;
+		}
+	}
+	return *this;
 }
 
-template <std::size_t W, std::size_t H, class T>
-template <std::size_t aWidth, std::size_t aHeight, class aT>
-const Matrix<W, H, T> Matrix<W, H, T>::operator=(const Matrix<aWidth, aHeight, aT>& other)
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+template<typename T2>
+Matrix<ROWS,COLS,T> Matrix<ROWS,COLS,T>::operator/(const T2& scalar) const
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+	Matrix<ROWS,COLS,T> m;
 
-    return *this;
+	for(std::size_t i = 0; i<ROWS; ++i)
+	{
+		for(std::size_t j = 0; j<COLS; ++j)
+		{
+			m.at(i).at(j) = matrix.at(i).at(j)/scalar;
+		}
+	}
+	return m;
 }
 
-template <std::size_t W, std::size_t H, class T>
-template <std::size_t aWidth, std::size_t aHeight, class aT>
-bool Matrix<W, H, T>::operator==(const Matrix<aWidth, aHeight, aT>& other)
+
+/************************************************************
+ * Matrix operators for matrix
+ ************************************************************/
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+template<std::size_t COLS2, typename T2>
+Matrix<ROWS,COLS2,T> Matrix<ROWS,COLS,T>::operator*(const Matrix<COLS,COLS2,T2>& aMatrix) const
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
-    if (&other == this) {
-        return true;
-    }
+    Matrix<COLS,COLS2,T2> tempMatrix(aMatrix);
 
-    return W == aWidth && H == aHeight &&
-           innerMatrix == other.innerMatrix;
-}
+    Matrix<ROWS,COLS2,T> newMatrix;
 
-template <std::size_t W, std::size_t H, class T>
-std::ostream& operator<<(std::ostream& stream,
-                                const Matrix<W, H, T>& other)
-{
-    return stream << other.to_string();
-}
-
-template <std::size_t W, std::size_t H, class T>
-Matrix<H, W, T> Matrix<W, H, T>::transpose() const
-{
-    Matrix<H, W, T> temp = Matrix<H, W, T>();
-    for (std::size_t i = 0; i < H; ++i) {
-        for (std::size_t j = 0; j < W; ++j) {
-            temp[j][i] = innerMatrix[i][j];
-        }
-    }
-    return temp;
-}
-
-template <std::size_t W, std::size_t H, class T>
-template <class aT>
-Matrix<W, H, T> Matrix<W, H, T>::pointWiseMultiply(const T value)
-{
-    for (std::size_t i = 0; i < H; ++i) {
-        for (std::size_t j = 0; j < W; ++j) {
-            innerMatrix[j][i] = value * innerMatrix[i][j];
-        }
-    }
-    return *this;
-}
-
-template <std::size_t W, std::size_t H, class T>
-std::string Matrix<W, H, T>::to_string() const
-{
-    std::string temp = "[Matrix]<" + std::to_string(W) + "," +
-                       std::to_string(H) + ">\n{\n";
-    for (std::size_t i = 0; i < H; ++i) {
-        for (std::size_t j = 0; j < W; ++j) {
-            temp += std::to_string(innerMatrix[i][j]) + ",";
-        }
-        temp += "\n";
-    }
-    temp += "}";
-    return temp;
-}
-
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T>& Matrix<W, H, T>::operator*=(const T& scalar)
-{
-    for (std::size_t i = 0; i < H; ++i) {
-        for (std::size_t j = 0; j < W; ++j) {
-            innerMatrix.at(i).at(j) *= scalar;
-        }
-    }
-    return *this;
-}
-
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T> Matrix<W, H, T>::operator*(const T& scalar) const
-{
-    Matrix<W, H, T> temp(*this);
-    return temp *= scalar;
-}
-
-template <std::size_t W, std::size_t H, class T>
-template <class aT>
-Matrix<W, H, T>& Matrix<W, H, T>::operator/=(const aT& scalar)
-{
-    for (std::size_t i = 0; i < H; ++i) {
-        for (std::size_t j = 0; j < W; ++j) {
-            innerMatrix[i][j] /= scalar;
-        }
-    }
-    return *this;
-}
-
-template <std::size_t W, std::size_t H, class T>
-template <class aT>
-Matrix<W, H, T> Matrix<W, H, T>::operator/(const aT& scalar) const
-{
-    Matrix<W, H, T> temp = *this;
-    return temp /= scalar;
-}
-
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T>& Matrix<W, H, T>::operator+=(const T& value)
-{
-    for (std::size_t i = 0; i < H; ++i) {
-        for (std::size_t j = 0; j < W; ++j) {
-            innerMatrix[i][j] += value;
-        }
-    }
-    return *this;
-}
-
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T> Matrix<W, H, T>::operator+(const T& value)
-{
-    Matrix<W, H, T> temp = *this;
-    return temp += value;
-}
-
-template <std::size_t W, std::size_t H, class T>
-template <class aT>
-Matrix<W, H, T>& Matrix<W, H, T>::operator-=(const aT& value)
-{
-    for (std::size_t i = 0; i < H; ++i) {
-        for (std::size_t j = 0; j < W; ++j) {
-            innerMatrix[i][j] -= value;
-        }
-    }
-    return *this;
-}
-
-template <std::size_t W, std::size_t H, class T>
-template <class aT>
-Matrix<W, H, T> Matrix<W, H, T>::operator-(const aT& value) const
-{
-    Matrix<W, H, T> temp = *this;
-    return temp -= value;
-}
-
-template <std::size_t W, std::size_t H, class T>
-template <std::size_t aWidth, std::size_t aHeight>
-Matrix<aWidth, H, T> Matrix<W, H, T>::operator*(const Matrix<aWidth, aHeight, T>& other) const
-{
-    if (W != aHeight) {
-        throw std::runtime_error("Error: Can't multiply matrixes, because "
-                                 "their size doesn't allow "
-                                 "that.");
-    }
-
-    Matrix<aWidth, aHeight, T> temp = other;
-    Matrix<aWidth, H, T> tempMatrix =
-        Matrix<aWidth, H, T>();
-
-    for (std::size_t i = 0; i < H; ++i) {
-        for (std::size_t j = 0; j < aWidth; ++j) {
-            for (std::size_t k = 0; k < W; ++k) {
-                tempMatrix[i][j] += innerMatrix[i][k] * temp[k][j];
+    for (std::size_t i = 0; i < ROWS; ++i)
+    {
+        for (std::size_t j = 0; j < COLS2; ++j)
+        {
+        	T2 rowValue = 0;
+            for (std::size_t k = 0; k < COLS; ++k)
+            {
+            	rowValue+= matrix.at(i).at(k) * tempMatrix.at(k).at(j);
             }
+            newMatrix.at(i).at(j) = static_cast<T>(rowValue);
         }
     }
-    return tempMatrix;
+
+	return newMatrix;
 }
 
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T>& Matrix<W, H, T>::operator+=(const Matrix<W, H, T>& other)
+
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+Matrix<ROWS,COLS,T>& Matrix<ROWS,COLS,T>::operator+=(const Matrix<ROWS,COLS,T>& aMatrix)
 {
-    for (std::size_t i = 0; i < H; ++i) {
-        for (std::size_t j = 0; j < W; ++j) {
-            innerMatrix[i][j] += other.at(i, j);
-        }
-    }
-    return *this;
+
+	for(std::size_t i =0; i<ROWS; ++i)
+	{
+		for(std::size_t j=0; j<COLS; ++j)
+		{
+			this->at(i).at(j) += aMatrix.at(i,j);
+		}
+	}
+	return *this;
 }
 
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T> Matrix<W, H, T>::operator+(const Matrix<W, H, T>& other)
+
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+Matrix<ROWS,COLS,T> Matrix<ROWS,COLS,T>::operator+(const Matrix<ROWS,COLS,T>& aMatrix) const
 {
-    Matrix<W, H, T> temp(*this);
-    return temp += other;
+	Matrix<ROWS,COLS,T> m;
+
+	for(std::size_t i =0; i<ROWS; ++i)
+	{
+		for(std::size_t j=0; j<COLS; ++j)
+		{
+			m.at(i).at(j) = matrix.at(i).at(j) + aMatrix.at(i,j);
+		}
+	}
+	return m;
 }
 
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T>& Matrix<W, H, T>::operator-=(const Matrix<W, H, T>& other)
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+Matrix<ROWS,COLS,T>& Matrix<ROWS,COLS,T>::operator-=(const Matrix<ROWS,COLS,T>& aMatrix)
 {
-    for (std::size_t i = 0; i < H; ++i) {
-        for (std::size_t j = 0; j < W; ++j) {
-            innerMatrix[i][j] -= other.at(i, j);
-        }
-    }
-    return *this;
+
+	for(std::size_t i =0; i<ROWS; ++i)
+	{
+		for(std::size_t j=0; j<COLS; ++j)
+		{
+			this->at(i).at(j) -= aMatrix.at(i,j);
+		}
+	}
+	return *this;
 }
 
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T> Matrix<W, H, T>::operator-(Matrix<W, H, T>& other)
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+Matrix<ROWS,COLS,T> Matrix<ROWS,COLS,T>::operator-(const Matrix<ROWS,COLS,T>& aMatrix) const
 {
-    Matrix<W, H, T> temp(*this);
-    return temp -= other;
+	Matrix<ROWS,COLS,T> m;
+
+	for(std::size_t i =0; i<ROWS; ++i)
+	{
+		for(std::size_t j=0; j<COLS; ++j)
+		{
+			m.at(i).at(j) = this->at(i,j) - aMatrix.at(i,j);
+		}
+	}
+	return m;
 }
 
-template<std::size_t W, std::size_t H, class T>
-Matrix<W, H, T> Matrix<W,H,T>::identity() const {
+/************************************************************
+ * Matrix functions
+ ************************************************************/
 
-	if (W != H) {
-	        throw std::runtime_error("Error: Can't create identity matrix"
-	                                 "Because the width is not equal to height");
-	    }
-
-    Matrix<W, H, T> identity;
-
-    for (std::size_t i = 0; i < H; ++i) {
-        for (std::size_t j = 0; j < W; ++j) {
-           if(j == i)
-           {
-        	   identity[i][j] = 1;
-        	   break;
-           }
-        }
-    }
-    return identity;
-}
-
-template<std::size_t W, std::size_t H, class T>
- Matrix<W, H, T> Matrix<W, H, T>::sort_rows(Matrix<W, H, T>& lhs,
-		Matrix<W, H, T>& rhs, unsigned int index)
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+Matrix<COLS,ROWS,T> Matrix<ROWS,COLS,T>::transpose() const
 {
-		int j = index;
-		for (unsigned short i = index; i < H; ++i) {
+	Matrix<COLS,ROWS,T> m;
+	for(std::size_t i=0; i<ROWS; ++i)
+	{
+		for(std::size_t j=0; j<COLS; ++j)
+		{
+			m.at(j).at(i) = matrix.at(i).at(j);
+		}
+	}
+	return m;
+}
 
-			std::array<T, W> ref = lhs[j];
-			std::array<T, W> ref2 = lhs[i];
 
-			std::array<T, W> iden = rhs[j];
-			std::array<T, W> iden2 = rhs[i];
+template<const std::size_t ROWS, const std::size_t COLS, typename T>
+const std::size_t Matrix<ROWS,COLS,T>::getRowSize() const
+{
+	return ROWS;
+}
 
-			if (ref2[index] == 1 || ref2[index] == -1) {
-				lhs[j].swap(ref2);
-				lhs[i].swap(ref);
+template<const std::size_t ROWS, const std::size_t COLS ,typename T>
+const std::size_t Matrix<ROWS,COLS,T>::getColumnSize() const
+{
+	return COLS;
+}
 
-				rhs[j].swap(iden2);
-				rhs[i].swap(iden);
-				++j;
-			} else if (ref[index] > ref2[index]) {
-				lhs[i].swap(ref);
-				lhs[j].swap(ref2);
+template<const std::size_t ROWS, const std::size_t COLS ,typename T>
+const std::size_t Matrix<ROWS,COLS,T>::getMatrixSize() const
+{
+	return ROWS*COLS;
+}
 
-				rhs[i].swap(iden);
-				rhs[j].swap(iden2);
-				++j;
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+const std::string Matrix<ROWS,COLS,T>::to_string() const
+{
+	std::string output = "[Matrix]<" + std::to_string(ROWS) + "," + std::to_string(COLS) + ">\n{\n\t";
+
+	for(std::size_t i=0; i<ROWS; ++i)
+	{
+		output+="{";
+		for(std::size_t j=0; j<COLS; ++j)
+		{
+			output+=std::to_string(matrix.at(i).at(j));
+			output+= (j==COLS-1) ? ("}") : (",");
+		}
+		output+=(i==ROWS-1) ? ("\n") : (",\n\t");
+	}
+	output+="}";
+	return output;
+}
+
+
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+std::array<T,COLS>& Matrix<ROWS,COLS,T>::at(const std::size_t rowIndex)
+{
+	return matrix.at(rowIndex);
+}
+
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+T Matrix<ROWS,COLS,T>::at(const std::size_t rowIndex, const std::size_t columIndex) const
+{
+	return matrix.at(rowIndex).at(columIndex);
+}
+
+template <std::size_t ROWS, std::size_t COLS ,typename T >
+std::array<T, COLS>& Matrix<ROWS,COLS,T>::operator [](const std::size_t rowIndex)
+{
+	return matrix[rowIndex];
+}
+
+template<const std::size_t ROWS , const std::size_t COLS ,typename T>
+Matrix<ROWS, ROWS, T> Matrix<ROWS,COLS,T>::identity() const
+{
+	Matrix<ROWS, ROWS, T> m;
+
+	for(std::size_t i = 0; i<ROWS; ++i)
+	{
+		m.at(i).at(i) = 1;
+	}
+	return m;
+}
+
+template<const std::size_t ROWS, const std::size_t COLS,typename T>
+bool Matrix<ROWS,COLS,T>::approxEqual(Matrix<ROWS, COLS, T>& rhs, double precision)
+{
+	for(std::size_t i=0; i<rhs.getRowSize(); ++i)
+	{
+		for(std::size_t j=0; j<rhs.getColumnSize(); ++j)
+		{
+			if(std::abs((this->at(i).at(j) - rhs.at(i).at(j))) > precision) return false;
+		}
+	}
+
+	return true;
+}
+
+template <const std::size_t ROWS, const std::size_t COLS, typename T>
+Matrix<ROWS,COLS,T> Matrix<ROWS,COLS,T>::inverse()
+{
+	if(ROWS!=COLS) throw std::runtime_error("ROWS and COLS must be equal to calculate the inverse of the matrix");
+
+	Matrix<ROWS,2*COLS,T> inputConcatenated = this->concatenate();
+
+	//GAUSSIAN elimination
+	if(!inputConcatenated.isDeterminant())
+	{
+		throw std::runtime_error("this matrix is not invertible, the determinant is 0."
+				                 " Performing gaus elimination resulted the following matrix" +
+				                 inputConcatenated.to_string());
+	}
+
+	for(std::size_t row = 0; row<inputConcatenated.getRowSize(); ++row)
+	{
+		inputConcatenated.correctRowType(row); //set row to correct form (reduced echelon form where the first non-zero element is 1)
+		inputConcatenated.echolonForm(row); //GAUSSE-JORDAN elimination (forward and backwards elimination)
+	}
+
+	Matrix<ROWS,COLS,T> result = inputConcatenated.deconcatenate();
+
+	return result;
+}
+
+template<const std::size_t ROWS , const std::size_t COLS ,typename T>
+Matrix<ROWS, 2*COLS, T> Matrix<ROWS,COLS,T>::concatenate()
+{
+	Matrix<ROWS,COLS,T> i =this->identity();
+	Matrix<ROWS,2*COLS,T> m;
+
+	for(std::size_t j =0; j<ROWS; ++j)
+	{
+		for(std::size_t k =0; k<2*COLS; ++k)
+		{
+			m.at(j).at(k) = (k<COLS) ? (matrix.at(j).at(k)) : (i.at(j).at(k-COLS));
+		}
+	}
+
+	return m;
+}
+
+
+template<const std::size_t ROWS , const std::size_t COLS ,typename T>
+Matrix<ROWS,COLS/2,T> Matrix<ROWS,COLS,T>::deconcatenate ()
+{
+	Matrix<ROWS,COLS/2,T> m;
+	std::size_t startRowPos = COLS/2;
+
+	for(std::size_t j =0; j<ROWS; ++j)
+	{
+		for(std::size_t k =startRowPos; k<COLS; ++k)
+		{
+			m.at(j).at(k-startRowPos) = this->at(j).at(k);
+		}
+	}
+
+	return m;
+}
+
+
+template <std::size_t ROWS, std::size_t COLS, typename T>
+std::size_t Matrix<ROWS,COLS,T>::findTopRow(std::size_t rowPos)
+{
+	std::size_t highestPriorityPos = 0;
+	bool isNumberOneFound = false;
+	T highestValue= 0;
+	for(std::size_t i = rowPos; i<this->getRowSize(); ++i)
+	{
+		if(std::abs(this->at(i).at(rowPos)) == 1)
+		{
+			if(!isNumberOneFound)
+			{
+				highestPriorityPos = i;
+				isNumberOneFound = true;
+			}
+			else
+			{
+				for(std::size_t j =0 ; j<this->getColumnSize(); ++j)
+				{
+					if(std::abs(this->at(i).at(j)) > std::abs(this->at(highestPriorityPos).at(j)))
+					{
+
+						highestPriorityPos = i;
+						break;
+					}
+				}
 			}
 		}
-		return lhs;
+		else if(!isNumberOneFound)
+		{
+			if(std::abs(this->at(i).at(rowPos)) > highestValue)
+			{
+				highestValue = std::abs(this->at(i).front());
+				highestPriorityPos = i;
+			}
+			else if(std::abs(this->at(i).at(rowPos)) == highestValue)
+			{
+				for(std::size_t j =0 ; j<this->getColumnSize(); ++j)
+				{
+					if(std::abs(this->at(i).at(j)) > std::abs(this->at(highestPriorityPos).at(j)))
+					{
+						highestPriorityPos = i;
+						break;
+					}
+				}
+			}
+		}
+	}
+	return highestPriorityPos;
 }
 
-template<std::size_t W, std::size_t H, class T>
-Matrix<W, H, T> Matrix<W, H, T>::substract_cols_to_zero(Matrix<W, H, T>& lhs,
-		Matrix<W, H, T>& rhs, unsigned long index)
+template <std::size_t ROWS, std::size_t COLS, typename T>
+void Matrix<ROWS,COLS,T>::swapRows(std::size_t currentRowPos,std::size_t targetRowPos)
 {
+	this->at(currentRowPos).swap(this->at(targetRowPos));
+}
 
-		std::array<T, W> row = lhs[index];
-		std::array<T, W> rowi = rhs[index];
-		for (int i = 0; i < H; ++i) {
-			if (row != lhs[i]) {
-				double factor = lhs[i][index];
-				for (int j = 0; j < W; ++j) {
-					double subs = (row[j] * factor);
-					double subsi = (rowi[j] * factor);
-					lhs[i][j] -= subs;
-					rhs[i][j] -= subsi;
+template <std::size_t ROWS, std::size_t COLS, typename T>
+void Matrix<ROWS,COLS,T>::correctRowType(std::size_t targetRowPos)
+{
+	T factor =(1/this->at(targetRowPos).at(targetRowPos));
+	std::for_each(this->at(targetRowPos).begin(),this->at(targetRowPos).end(),[&factor](T& number){number*=factor;});
+}
+
+
+template <std::size_t ROWS, std::size_t COLS, typename T>
+void Matrix<ROWS,COLS,T>::echolonForm(std::size_t startPos)
+{
+	T factor = 0;
+
+	std::array<T,COLS> firstRow = this->at(startPos);
+
+	for(std::size_t row =0; row<this->getRowSize(); ++row)
+		{
+			factor = this->at(row).at(startPos);
+			if(startPos!=row)
+			{
+
+				for(std::size_t col = 0; col<this->getColumnSize(); ++col)
+				{
+					this->at(row).at(col) -= (factor*firstRow.at(col));
 				}
 			}
 
 		}
-		return lhs;
 }
 
-template<std::size_t W, std::size_t H, class T>
-Matrix<W, H, T> Matrix<W, H, T>::divide_row_to_one(Matrix<W, H, T>& lhs,
-		Matrix<W, H, T>& rhs, unsigned long row)
+
+template <std::size_t ROWS, std::size_t COLS, typename T>
+void Matrix<ROWS,COLS,T>::echolonRowForm(std::size_t startPos)
 {
-		double factor = (1 / lhs[row][row]);
+	T factor = 0;
 
-		for (int i = 0; i < W; ++i) {
-			lhs[row][i] *= factor;
-			rhs[row][i] *= factor;
+
+	std::array<T,COLS> firstRow = this->at(startPos);
+
+	for(std::size_t row =startPos; row<this->getRowSize(); ++row)
+		{
+			factor = (this->at(row).at(startPos))/firstRow.at(startPos);
+			if(startPos!=row)
+			{
+
+				for(std::size_t col = 0; col<this->getColumnSize(); ++col)
+				{
+					this->at(row).at(col) -= (factor*firstRow.at(col));
+				}
+			}
+
 		}
-		return lhs;
 }
 
-template<std::size_t W, std::size_t H, class T>
-Matrix<W, H, T> Matrix<W, H, T>::inverse()
+
+//for the row-echelon form used in this function
+//see the theory here https://www.physicsforums.com/threads/determinants-by-row-reduction-row-echelon-form.416298/
+template<const std::size_t ROWS, const std::size_t COLS,typename T>
+bool Matrix<ROWS,COLS,T>::isDeterminant()
 {
-		if (W != H) {
-			throw std::runtime_error("Current implementation only supports "
-					"matrices with the same height as width ");
+	T sum = 1;
+	std::size_t nZeroColumns = 0;
+	std::size_t nZeroRows = 0;
+
+	for(std::size_t row = 0; row<getRowSize(); ++row)
+	{
+		for(std::size_t col = 0; col<getColumnSize()/2; ++col)
+		{
+			if(this->at(row).at(col)==0) ++nZeroColumns;
+			if(this->at(col).at(row)==0) ++nZeroRows;
 		}
 
-		Matrix<W, H, T> identity = this->identity();
-		Matrix<W, H, T> temp = *(this);
-		for (int i = 0; i < H; ++i) {
-			sort_rows(temp, identity, i);
-			divide_row_to_one(temp, identity, i);
-			substract_cols_to_zero(temp, identity, i);
-		}
+		if(nZeroColumns == COLS/2 || nZeroRows == ROWS) return false;
+	}
 
-		return identity;
+	for(std::size_t row = 0; row<getRowSize(); ++row)
+	{
+		std::size_t foundRowPos = findTopRow(row);
+		swapRows(row,foundRowPos);
+		echolonRowForm(row); //row-echelon form
+		sum*=this->at(row).at(row);
+	}
+
+	return sum!=0;
 }
 
-template <std::size_t W, std::size_t H, class T>
-Matrix<W, H, T>::~Matrix()
-{
-}
 
 #endif /* MATRIX_HPP_ */
