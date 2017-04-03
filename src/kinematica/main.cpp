@@ -27,15 +27,15 @@ const double PI = std::acos(-1);
 
 std::pair<double,double> forward_kinematic(double x0,
 										   double y0,
-										   double a,
+										   double l1,
 										   double q1,
-										   double b,
+										   double l2,
 										   double q2,
-										   double c,
+										   double l3,
 										   double q3)
 {
-	double x = x0+a*std::sin(q1 * PI / 180.0)+b*std::sin((q1+q2) * PI / 180.0)+c*std::sin((q1+q2+q3) * PI / 180.0);
-	double y = y0+a*std::cos(q1 * PI / 180.0)+b*std::cos((q1+q2) * PI / 180.0)+c*std::cos((q1+q2+q3) * PI / 180.0);
+	double x = x0+l1*std::sin(q1 * PI / 180.0)+l2*std::sin((q1+q2) * PI / 180.0)+l3*std::sin((q1+q2+q3) * PI / 180.0);
+	double y = y0+l1*std::cos(q1 * PI / 180.0)+l2*std::cos((q1+q2) * PI / 180.0)+l3*std::cos((q1+q2+q3) * PI / 180.0);
 
 	return std::make_pair(x,y);
 
@@ -81,8 +81,13 @@ Matrix<3,1,double> inverse_kinematica(double x0, double y0,double beta, double p
 
 	if(std::pow(g.at(0).at(0),2) + std::pow(g.at(1).at(0),2) > std::pow((l1+l2+l3),2) ) throw std::runtime_error("destination can never be reached because arm is not long enough");
 
-	while(!e.approxEqual(g,precision))
+	int i = 0;
+	while(!e.approxEqual(g,precision)
+			|| (currentPose[0][0] > 90 || currentPose[0][0] <-30)
+			|| (currentPose[1][0] > 135 || currentPose[1][0] < 0)
+			|| (currentPose[2][0] > 90 || currentPose[2][0] <-90))
 	{
+
 		//stap1 compute jacobi matrix
 		Matrix<2,3,double> jacobiMatrix = calculateJacobiMatrix(e,currentPose,l1,l2,l3); // resultaat van jacobijnse kom hier in. Jacobijn is afgeleide van forward_kinematic
 		//std::cout<<jacobiMatrix<<std::endl;
@@ -106,23 +111,38 @@ Matrix<3,1,double> inverse_kinematica(double x0, double y0,double beta, double p
 		auto coordinates= forward_kinematic(x0,y0,l1,currentPose.at(0).at(0),l2,currentPose.at(1).at(0),l3,currentPose.at(2).at(0));
 
 		e = {coordinates.first,coordinates.second};
+		++i;
 
 	}
+	std::cout << i << std::endl;
 	return currentPose;
 }
 int main(int argc, char **argv)
 {
 	double x0 = 0.0;
 	double y0 = 0.0;
-	double beta = 0.5;
+	double beta = 0.1;
 	double precision = 0.1;
-	Matrix<3,1,double> currentPose ({45,45,45});
-	Matrix<2,1,double> g({8.0,8.0});
-	Matrix<3,1,double> armReach({4,4,4});
+	Matrix<3,1,double> currentPose ({90,135,-90});
+	Matrix<2,1,double> g({100.0,100.0});
+	Matrix<3,1,double> armReach({50,50,50});
 
 	Matrix<3,1,double> foundAngles = inverse_kinematica(x0,y0,beta,precision,armReach,currentPose,g);
 
+	auto current = forward_kinematic(0,0,armReach[0][0],90,armReach[1][0],135,armReach[2][0],-90 );
+	auto found = forward_kinematic(0,0,armReach[0][0],foundAngles[0][0],armReach[1][0],foundAngles[1][0],armReach[2][0],foundAngles[2][0]);
+
+	Matrix<2,1,double> cur({50, -70});
+	Matrix<2,1,double> gtest({g[0][0],g[1][0]});
+
+	auto deltaTest =  gtest - cur;
+	deltaTest /= 2;
+	cur += deltaTest;
+
 	std::cout<<foundAngles<<std::endl;
+	std::cout<<found.first << "|" << found.second <<std::endl;
+	std::cout<<current.first << "|" << current.second <<std::endl;
+	std::cout<<cur[0][0] << "|" << cur[1][0] <<std::endl;
 
 	return 0;
 }
