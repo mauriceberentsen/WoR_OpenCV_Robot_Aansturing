@@ -32,7 +32,7 @@
 Voor de eindopdracht van WoR-Robots is er de opdracht om een applicatie te leveren die aan de hand van een simpele TUI (Text User Interface) items kan oppakken en op een opgegeven plek neerleggen. Om deze opdracht uit te kunnen voeren wordt
 \href{http://www.ros.org}{ ROS (Robot Operating System)} gebruikt om de arm aan te sturen, en er wordt gebruik gemaakt van \href{http://www.opencv.org}{OpenCV} voor de beeldherkenning. Alle code die door de student geschreven wordt zal bestaan uit C++11
 \section{Applicatie design}
-\subsection{Het berekenen van het pad}
+\subsection{Het berekenen van de beweging van de robotarm}
 
 Om het pad te bereken die de robotarm moet afleggen moet er eerst een configuratie gevonden worden. Dit omdat de robot niet aangestuurd wordt met co\"ordinaten maar hij de hoeken van de arm moet ontvangen. Vervolgens kan er met het A* algoritme berekend wordt het pad naar deze configuratie berekend. 
 
@@ -40,7 +40,7 @@ Om het pad te bereken die de robotarm moet afleggen moet er eerst een configurat
 Voor het berekenen van de configuratie word er eerst een twee dimensionaal punt bepaald vanaf het zijaanzicht. In het twee dimensionale stelsel wordt er gewerkt met co\"ordinaten X en Y. Deze co\"odinaten zetten we om naar een configuratie met behulp van het volgende algoritme dit daarna per punt wordt behandeld.
 
 
-while ( $e$ is too far from $g$)\\
+while ( $e$ is too far from $g$ and found $\theta_{nieuw}$ is within solutionspace)\\
 Compute $J(e,\theta)$ for the current pose $\theta$\\
 Compute $J^{-1}$\\     
 $\Delta e = \beta(g-e)$ \\ 
@@ -49,12 +49,14 @@ $\theta_{nieuw} = \theta_{oud} + \Delta \theta$\\
 Compute new e vector \\
 
 \begin{enumerate}
-	\item while ( $e$ is too far from $g$)\\
+	\item while ( $e$ is too far from $g$)and found $\theta_{nieuw}$ is within solutionspace)\\
 	Zolang het gevonden eindpunt $e$ nog niet ongeveer gelijk is aan het doel $g$ wordt het volgende uitgevoerd.
 	
 	Voor het berekenen van de configuratie naar een x,y co\"ordinaat wordt het forward kinematics gebruikt. Dit levert de volgende twee formules op:\\
 	$x = x_0 + l_1 \cdot sin(\theta_1) + l_2 \cdot sin(\theta_1 + \theta_2) + l_3 \cdot sin(\theta_1 + \theta_2 + \theta_3)$\\
 	$y = y_0 + l_1 \cdot cos(\theta_1) + l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3)$
+	
+	Als de gevonden configuratie overigens niet in de oplossingsruimte valt wordt er naar een volgende oplossing gezocht.
 	\item Compute $J(e,\theta)$ for the current pose $\theta$\\
 	De Jacobi wordt afgeleid vanuit de ingaande onafhankelijke variabelen $x , y$ en de uitgaande afhankelijke variablen $\theta_1 ,\theta_2 ,\theta_3$ ofwel $\mathbb{R}^3 \rightarrow \mathbb{R}^2$. Dit levert de volgende Jacobi matrix op:
 	$
