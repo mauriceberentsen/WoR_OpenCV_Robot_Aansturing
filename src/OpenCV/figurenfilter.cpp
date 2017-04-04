@@ -8,9 +8,11 @@
 #include "figurenfilter.h"
 
 
-bool shapeFinder::findShapes(cv::Mat& input, cv::Mat& output , cv::Mat& Mask, shapeFinder::shape aShape)
-	{
+std::vector<shapeFinder::shapeInfo> shapeFinder::findShapes(cv::Mat& input, cv::Mat& output , cv::Mat& Mask, shapeFinder::shape aShape)
+
+{
 	//Apply blur to smooth edges and use adaptive thresholding
+	 std::vector<shapeFinder::shapeInfo> foundshapes;
 	 unsigned long hits = 0;
 	 cv::Mat input_grey, dst;
 	 cv::cvtColor(input, input_grey, cv::COLOR_BGR2GRAY);
@@ -59,6 +61,7 @@ bool shapeFinder::findShapes(cv::Mat& input, cv::Mat& output , cv::Mat& Mask, sh
 	    			{
 	    				++hits;
 	    				printFigureInfo(contours[i]);
+    					addToShapes(contours[i], foundshapes);
 	    				setLabel(input, "TRI", contours[i]);    // Triangles
 	    			}
 
@@ -82,12 +85,14 @@ bool shapeFinder::findShapes(cv::Mat& input, cv::Mat& output , cv::Mat& Mask, sh
 	    					setLabel(input, "VIER", contours[i]);
 	    					++hits;
 	    					printFigureInfo(contours[i]);
+	    					addToShapes(contours[i], foundshapes);
 	    					}
 	    					else if(aShape == RECTANGLE)
 	    					{
 	    					setLabel(input, "RECT", contours[i]);
 	    					++hits;
 	    					printFigureInfo(contours[i]);
+	    					addToShapes(contours[i], foundshapes);
 	    					}
 	    				}
 
@@ -103,6 +108,7 @@ bool shapeFinder::findShapes(cv::Mat& input, cv::Mat& output , cv::Mat& Mask, sh
 	    					setLabel(input, "half", contours[i]);
 	    					++hits;
 	    					printFigureInfo(contours[i]);
+	    					addToShapes(contours[i], foundshapes);
 	    				}
 	    			}
 	    		else
@@ -115,20 +121,14 @@ bool shapeFinder::findShapes(cv::Mat& input, cv::Mat& output , cv::Mat& Mask, sh
 	    					setLabel(input, "CIR", contours[i]);
 	    					++hits;
 	    					printFigureInfo(contours[i]);
+	    					addToShapes(contours[i], foundshapes);
 	    				}
 	    			}
 
 
 	    }
 	    output = input;
-	    if(hits < 1)
-	    {
-	    	return false;
-	    }
-	    else{
-
-	    	return true;
-	    }
+	    return foundshapes;
 
 
 }
@@ -149,6 +149,16 @@ void shapeFinder::setLabel(cv::Mat& im, const std::string label, std::vector<cv:
 	cv::Point pt(r.x + ((r.width - text.width) / 2), r.y + ((r.height + text.height) / 2));
 	cv::rectangle(im, pt + cv::Point(0, baseline), pt + cv::Point(text.width, -text.height), CV_RGB(255,255,255), CV_FILLED);
 	cv::putText(im, label, pt, fontface, scale, CV_RGB(0,0,0), thickness, 8);
+}
+
+void shapeFinder::addToShapes(std::vector<cv::Point>& contour,  std::vector<shapeFinder::shapeInfo>& vec )
+{
+	cv::Moments mom = cv::moments(contour, false);
+	cv::Point2d center(mom.m10/mom.m00, mom.m01/mom.m00);
+
+	shapeInfo s(center.x, center.y);
+	vec.push_back(s);
+
 }
 
 void shapeFinder::printFigureInfo(std::vector<cv::Point>& contour)

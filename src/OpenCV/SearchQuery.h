@@ -19,7 +19,7 @@ class SearchQuery {
 public:
 	SearchQuery(cv::Mat& source ,cv::Mat& output,  colourfinder::colour  aColour, shapeFinder::shape aShape);
 	virtual ~SearchQuery();
-
+	std::vector<shapeFinder::shapeInfo> result;
 	uint64_t rdtsc();
 
 };
