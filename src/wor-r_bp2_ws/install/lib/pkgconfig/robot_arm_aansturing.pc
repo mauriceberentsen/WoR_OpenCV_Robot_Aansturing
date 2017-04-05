@@ -1,0 +1,8 @@
+prefix=/home/agit/Documents/Gitlabprojecten/AansturingSimpleServoArduino-ROS/wor-r_bp1_ws/install
+
+Name: robot_arm_aansturing
+Description: Description of robot_arm_aansturing
+Version: 0.0.0
+Cflags: -I/home/agit/Documents/Gitlabprojecten/AansturingSimpleServoArduino-ROS/wor-r_bp1_ws/install/include
+Libs: -L/home/agit/Documents/Gitlabprojecten/AansturingSimpleServoArduino-ROS/wor-r_bp1_ws/install/lib 
+Requires: 
