@@ -36,6 +36,7 @@ public:
 	 */
 	Matrix<3,1,double> inverse_kinematica(double x0, double y0,double beta, double precision,Matrix<3,1,double> aCurrentPoseAngles,Matrix<2,1,double> g);
 
+
 	void executeMotionPlanning(double x0, double y0,double beta, double precision,Matrix<3,1,double> aCurrentPoseAngles,Matrix<2,1,double> g);
 
 	virtual ~Kinematic();

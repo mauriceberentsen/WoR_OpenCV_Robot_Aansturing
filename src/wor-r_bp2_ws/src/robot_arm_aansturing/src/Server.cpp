@@ -30,7 +30,7 @@ public:
 	Servo(3,-90,90,630,2430),
 	Servo(4,1,0,850,2300),
 	Servo(5,-90,90,700,2400)
-	}),noodStop(false)
+	}),noodStop(false),publishState(false)
   {
     //register the goal and feedback callbacks
     as.registerGoalCallback(boost::bind(&Server::goalCB, this));
@@ -56,6 +56,7 @@ public:
 
     arm.gotoPosition(Task({angles.at(0),angles.at(1),angles.at(2),angles.at(3),angles.at(4),angles.at(5)},time_));
 
+    publishState = true;
   }
 
   void preemptCB()
@@ -73,7 +74,7 @@ public:
   void runServer()
   {
 	  ros::Rate r(10);
-	  while(as.isActive())
+	  while(as.isActive() && publishState)
 	  {
 		  feedback.moving = arm.isArmMoving();
 		  as.publishFeedback(feedback);
@@ -83,6 +84,7 @@ public:
 			  std::cout<<"succeeded"<<std::endl;
 			  result.arrived = true;
 			  as.setSucceeded(result);
+			  publishState = false;
 		  }
 //		  if(!feedback.moving && !as.isPreemptRequested())
 //		  {
@@ -95,6 +97,7 @@ public:
 		  ROS_INFO("STOP NU!!");
 		  arm.stopRobot();
 		  noodStop=false;
+		  publishState = false;
 	  }
 
   }
@@ -120,6 +123,7 @@ protected:
   ros::Subscriber sub;
   RobotArm arm;
   bool noodStop;
+  bool publishState;
 
 };
 

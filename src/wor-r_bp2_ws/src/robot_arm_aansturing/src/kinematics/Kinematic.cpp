@@ -115,14 +115,15 @@ void Kinematic::executeMotionPlanning(double x0, double y0, double beta,
 	//
 	//			cur= (cur+gtest) * 0.5; //middenpunt berekening;
 
+	//3000 0 45 45 45 0 0
 	//robot foundAngles laten uitvoeren
 	pos.request.time = 3000;
 	pos.request.angles.push_back(0); //base
 	pos.request.angles.push_back(foundAngles.at(0).at(0)); //shoulder
 	pos.request.angles.push_back(foundAngles.at(1).at(0)); //elbow
 	pos.request.angles.push_back(foundAngles.at(2).at(0)); //wrist
-	pos.request.angles.push_back(45);
-	pos.request.angles.push_back(45);
+	pos.request.angles.push_back(0);
+	pos.request.angles.push_back(0);
 	if (client.call(pos))
 	{
 		ROS_INFO("accepted position: %d", (long int )pos.response.accepted);
@@ -155,8 +156,8 @@ void Kinematic::executeMotionPlanning(double x0, double y0, double beta,
 	pos.request.angles.push_back(aCurrentPoseAngles.at(0).at(0));
 	pos.request.angles.push_back(aCurrentPoseAngles.at(1).at(0));
 	pos.request.angles.push_back(aCurrentPoseAngles.at(2).at(0));
-	pos.request.angles.push_back(45);
-	pos.request.angles.push_back(45);
+	pos.request.angles.push_back(0);
+	pos.request.angles.push_back(0);
 	sleep(4);
 	if (client.call(pos))
 	{
@@ -177,8 +178,8 @@ void Kinematic::executeMotionPlanning(double x0, double y0, double beta,
 	pos.request.angles.push_back(foundAngles.at(0).at(0));
 	pos.request.angles.push_back(foundAngles.at(1).at(0));
 	pos.request.angles.push_back(foundAngles.at(2).at(0));
-	pos.request.angles.push_back(45);
-	pos.request.angles.push_back(45);
+	pos.request.angles.push_back(0);
+	pos.request.angles.push_back(0);
 	if (client.call(pos))
 	{
 		ROS_INFO("accepted position: %d", (long int )pos.response.accepted);
