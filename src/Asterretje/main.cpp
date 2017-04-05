@@ -10,6 +10,7 @@
 #include "AStar.hpp"
 #include "Kinematic.hpp"
 #include "Point.hpp"
+//#include <opencv-3.2.0/opencv2/aruco.hpp> <--- nodig voor opencv
 
 int main(int argc, char **argv)
 {
@@ -28,34 +29,25 @@ int main(int argc, char **argv)
 	   // std::cout << myPos;
 	    //std::cout << position.x << "\t" << position.y << "\t" << position.z << "\t" << std::endl;
 
-			Kinematic robotArm({{-30,90},{0,135},{-90,90}},{50,50,50});
+		//14.5 cm eerste arm shoulder servo to elbow sevo
+		//18.7 cm tweede arm elbow servo to wrist servo
+		//12   cm derde arm  wrist servo to uit einde van gripper
+			Kinematic robotArm({{-30,90},{0,135},{-90,90}},{14.5,18.7,12.0});
 		  	double x0 = 0.0;
 			double y0 = 0.0;
 			double beta = 0.1;
 			double precision = 0.1;
 			Matrix<3,1,double> currentPose (
 											{
-												{{90}},			//hoek van base
-												{{135}},			//hoek van shoulder
-												{{-90}},			//hoek van elbow
+												{{45}},		//hoek van shoulder
+												{{45}},			//hoek van elbow
+												{{45}},			//hoek van wrist
 											}
 											);
-			Matrix<2,1,double> g({100.0,100.0});
+			Matrix<2,1,double> g({20.0,20.0});
 
-			Matrix<3,1,double> foundAngles = robotArm.inverse_kinematica(x0,y0,beta,precision,currentPose,g);
+			robotArm.executeMotionPlanning(x0,y0,beta,precision,currentPose,g);
 
-			auto current = robotArm.forward_kinematic(0,0,currentPose[0][0],currentPose[1][0],currentPose[2][0] );
-			auto found = robotArm.forward_kinematic(0,0,foundAngles[0][0],foundAngles[1][0],foundAngles[2][0]);
-
-			Matrix<2,1,double> cur({50, -70});
-			Matrix<2,1,double> gtest({g[0][0],g[1][0]});
-
-			cur= (cur+gtest) * 0.5; //middenpunt berekening;
-
-			std::cout<<foundAngles<<std::endl;
-			std::cout<<found.first << "|" << found.second <<std::endl;
-			std::cout<<current.first << "|" << current.second <<std::endl;
-			std::cout<<cur[0][0] << "|" << cur[1][0] <<std::endl;
 
 	}
 	catch (std::exception& e)
