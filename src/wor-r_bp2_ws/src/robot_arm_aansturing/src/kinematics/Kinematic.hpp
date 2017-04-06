@@ -22,7 +22,7 @@ public:
 	 * Zie de onderstaande constructor voor hoe de default waarde zijn ingestelt voor 3DOF
 	 * Ook moet er een matrix gegeven worden met de 3 arm lengtes
 	 */
-	Kinematic(Matrix<3,2,double> aRobotArmAngleRestrictions = {{-30,90},{0,135},{-90,90}} ,Matrix<3,1,double> aRobotArmReach = {4,4,4} );
+	Kinematic(Matrix<3,2,double> aRobotArmAngleRestrictions = {{-30,90},{0,135},{-90,90}} ,Matrix<3,1,double> aRobotArmReach = {4,4,4});
 
 	std::pair<double,double> forward_kinematic(double x0,
 											   double y0,
@@ -37,7 +37,7 @@ public:
 	Matrix<3,1,double> inverse_kinematica(double x0, double y0,double beta, double precision,Matrix<3,1,double> aCurrentPoseAngles,Matrix<2,1,double> g);
 
 
-	void executeMotionPlanning(double x0, double y0,double beta, double precision,Matrix<3,1,double> aCurrentPoseAngles,Matrix<2,1,double> g);
+	void executeMotionPlanning(double x0, double y0,double beta, double precision,double startAngleBase,Matrix<3,1,double> aCurrentPoseAngles,Matrix<2,1,double> g1,Matrix<2,1,double> g2,double endAngleBase);
 
 	virtual ~Kinematic();
 

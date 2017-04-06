@@ -93,8 +93,8 @@ Matrix<3, 1, double> Kinematic::inverse_kinematica(double x0, double y0,
 }
 
 void Kinematic::executeMotionPlanning(double x0, double y0, double beta,
-		double precision, Matrix<3, 1, double> aCurrentPoseAngles,
-		Matrix<2, 1, double> g)
+		double precision,double startAngleBase, Matrix<3, 1, double> aCurrentPoseAngles,
+		Matrix<2,1,double> g1,Matrix<2,1,double> g2, double endAngleBase)
 {
 	ros::ServiceClient client;
 	ros::NodeHandle n;
@@ -105,7 +105,7 @@ void Kinematic::executeMotionPlanning(double x0, double y0, double beta,
 
 	auto current = forward_kinematic(x0,y0,aCurrentPoseAngles[0][0],aCurrentPoseAngles[1][0],aCurrentPoseAngles[2][0]);
 
-	Matrix<3,1,double> foundAngles = inverse_kinematica(x0,y0,beta,precision,aCurrentPoseAngles,g);
+	Matrix<3,1,double> foundAngles = inverse_kinematica(x0,y0,beta,precision,aCurrentPoseAngles,g1);
 
 
 	auto found = forward_kinematic(x0,y0,foundAngles[0][0],foundAngles[1][0],foundAngles[2][0]);
@@ -117,12 +117,40 @@ void Kinematic::executeMotionPlanning(double x0, double y0, double beta,
 
 	//3000 0 45 45 45 0 0
 	//robot foundAngles laten uitvoeren
+
+	ros::ServiceClient client7;
+	ros::NodeHandle n7;
+	client7 = n7.serviceClient<robot_arm_aansturing::position>(
+			"add_position_task");
+
+	robot_arm_aansturing::position pos7;
+	//ga naar object draaien
+	pos7.request.time = 3000;
+	pos7.request.angles.push_back(90); //base
+	pos7.request.angles.push_back(-27);
+	pos7.request.angles.push_back(83);
+	pos7.request.angles.push_back(89);
+	pos7.request.angles.push_back(1);
+	pos7.request.angles.push_back(0);
+	if (client7.call(pos7))
+	{
+		ROS_INFO("accepted position: %d", (long int )pos.response.accepted);
+	}
+	else
+	{
+		ROS_ERROR("Failed to call service");
+		return ;
+	}
+
+	std::cout<<"naar object gedraait"<<std::endl;
+
+	//ga naar object
 	pos.request.time = 3000;
-	pos.request.angles.push_back(0); //base
+	pos.request.angles.push_back(startAngleBase); //base
 	pos.request.angles.push_back(foundAngles.at(0).at(0)); //shoulder
 	pos.request.angles.push_back(foundAngles.at(1).at(0)); //elbow
-	pos.request.angles.push_back(foundAngles.at(2).at(0)); //wrist
-	pos.request.angles.push_back(0);
+	pos.request.angles.push_back(-foundAngles.at(2).at(0)); //wrist
+	pos.request.angles.push_back(1);
 	pos.request.angles.push_back(0);
 	if (client.call(pos))
 	{
@@ -133,13 +161,13 @@ void Kinematic::executeMotionPlanning(double x0, double y0, double beta,
 		ROS_ERROR("Failed to call service");
 		return ;
 	}
-	sleep(4);
 	std::cout<<foundAngles<<std::endl;
 	std::cout<<current.first << "|" << current.second <<std::endl;
 	std::cout<<found.first << "|" << found.second <<std::endl;
 
+	std::cout<<"naar object gegaan"<<std::endl;
 
-	//			std::cout<<cur[0][0] << "|" << cur[1][0] <<std::endl;
+//	//			std::cout<<cur[0][0] << "|" << cur[1][0] <<std::endl;
 	aCurrentPoseAngles = foundAngles;
 
 	current = forward_kinematic(x0,y0,aCurrentPoseAngles[0][0],aCurrentPoseAngles[1][0],aCurrentPoseAngles[2][0]);
@@ -147,53 +175,154 @@ void Kinematic::executeMotionPlanning(double x0, double y0, double beta,
 
 	std::cout<<"ik ben bij blokje "<<current.first << "|" << current.second <<std::endl;
 
-	g = {30.0,30.0};
-	aCurrentPoseAngles.at(1).at(0) = 90;
-	//uitvoeren currentPose;
+	//pak object
+	ros::ServiceClient client5;
+	ros::NodeHandle n5;
+	client5 = n5.serviceClient<robot_arm_aansturing::position>(
+			"add_position_task");
 
-	pos.request.time = 3000;
-	pos.request.angles.push_back(0); //base
-	pos.request.angles.push_back(aCurrentPoseAngles.at(0).at(0));
-	pos.request.angles.push_back(aCurrentPoseAngles.at(1).at(0));
-	pos.request.angles.push_back(aCurrentPoseAngles.at(2).at(0));
-	pos.request.angles.push_back(0);
-	pos.request.angles.push_back(0);
-	sleep(4);
-	if (client.call(pos))
+	robot_arm_aansturing::position pos5;
+	pos5.request.time = 3000;
+	pos5.request.angles.push_back(startAngleBase); //base
+	pos5.request.angles.push_back(foundAngles.at(0).at(0)); //shoulder
+	pos5.request.angles.push_back(foundAngles.at(1).at(0)); //elbow
+	pos5.request.angles.push_back(-foundAngles.at(2).at(0)); //wrist
+	pos5.request.angles.push_back(0);
+	pos5.request.angles.push_back(0);
+	if (client5.call(pos5))
 	{
-		ROS_INFO("accepted position: %d", (long int )pos.response.accepted);
+		ROS_INFO("accepted position: %d", (long int )pos5.response.accepted);
 	}
 	else
 	{
 		ROS_ERROR("Failed to call service");
 		return ;
 	}
+	std::cout<<foundAngles<<std::endl;
+	std::cout<<current.first << "|" << current.second <<std::endl;
+	std::cout<<found.first << "|" << found.second <<std::endl;
+	std::cout<<"naar object gepakt"<<std::endl;
 
+	//ga omhooog---------------------------------------------------------
+	aCurrentPoseAngles.at(0).at(0) = -30;
+	ros::ServiceClient client2;
+	ros::NodeHandle n2;
+	robot_arm_aansturing::position pos2;
+	client2 = n2.serviceClient<robot_arm_aansturing::position>(
+			"add_position_task");
+
+	pos2.request.time = 3000;
+	pos2.request.angles.push_back(startAngleBase); //base
+	pos2.request.angles.push_back(aCurrentPoseAngles.at(0).at(0));
+	pos2.request.angles.push_back(aCurrentPoseAngles.at(1).at(0));
+	pos2.request.angles.push_back(-aCurrentPoseAngles.at(2).at(0));
+	pos2.request.angles.push_back(0);
+	pos2.request.angles.push_back(0);
+
+	std::cout<<aCurrentPoseAngles<<std::endl;
+	std::cout<<current.first << "|" << current.second <<std::endl;
+	std::cout<<found.first << "|" << found.second <<std::endl;
+	if (client2.call(pos2))
+	{
+		ROS_INFO("accepted position: %d", (long int )pos2.response.accepted);
+	}
+	else
+	{
+		ROS_ERROR("Failed to call service");
+		return ;
+	}
+	std::cout<<"omhoog gegaan"<<std::endl;
+//
+	//ga naar doel draaien
+	ros::ServiceClient client3;
+		ros::NodeHandle n3;
+		robot_arm_aansturing::position pos3;
+		client3 = n3.serviceClient<robot_arm_aansturing::position>(
+				"add_position_task");
+
+		pos3.request.time = 3000;
+		pos3.request.angles.push_back(endAngleBase); //base
+		pos3.request.angles.push_back(aCurrentPoseAngles.at(0).at(0));
+		pos3.request.angles.push_back(aCurrentPoseAngles.at(1).at(0));
+		pos3.request.angles.push_back(-aCurrentPoseAngles.at(2).at(0));
+		pos3.request.angles.push_back(0);
+		pos3.request.angles.push_back(0);
+		//sleep(4);
+		std::cout<<aCurrentPoseAngles<<std::endl;
+		std::cout<<current.first << "|" << current.second <<std::endl;
+		std::cout<<found.first << "|" << found.second <<std::endl;
+		if (client3.call(pos3))
+		{
+			ROS_INFO("accepted position: %d", (long int )pos3.response.accepted);
+		}
+		else
+		{
+			ROS_ERROR("Failed to call service");
+			return ;
+		}
+		std::cout<<"naar doel gedraait"<<std::endl;
+	//
 	current = forward_kinematic(x0,y0,aCurrentPoseAngles[0][0],aCurrentPoseAngles[1][0],aCurrentPoseAngles[2][0]);
-	foundAngles = inverse_kinematica(x0,y0,beta,precision,aCurrentPoseAngles,g);
+	foundAngles = inverse_kinematica(x0,y0,beta,precision,aCurrentPoseAngles,g2);
 	found = forward_kinematic(x0,y0,foundAngles[0][0],foundAngles[1][0],foundAngles[2][0]);
 
-	pos.request.time = 3000;
-	pos.request.angles.push_back(0); //base
-	pos.request.angles.push_back(foundAngles.at(0).at(0));
-	pos.request.angles.push_back(foundAngles.at(1).at(0));
-	pos.request.angles.push_back(foundAngles.at(2).at(0));
-	pos.request.angles.push_back(0);
-	pos.request.angles.push_back(0);
-	if (client.call(pos))
+	// ga naar doel
+	ros::ServiceClient client4;
+	ros::NodeHandle n4;
+	robot_arm_aansturing::position pos4;
+	client4 = n4.serviceClient<robot_arm_aansturing::position>(
+			"add_position_task");
+
+	pos4.request.time = 3000;
+	pos4.request.angles.push_back(endAngleBase); //base
+	pos4.request.angles.push_back(foundAngles.at(0).at(0));
+	pos4.request.angles.push_back(foundAngles.at(1).at(0));
+	pos4.request.angles.push_back(-foundAngles.at(2).at(0));
+	pos4.request.angles.push_back(0);
+	pos4.request.angles.push_back(0);
+	if (client4.call(pos4))
 	{
-		ROS_INFO("accepted position: %d", (long int )pos.response.accepted);
+		ROS_INFO("accepted position: %d", (long int )pos4.response.accepted);
 	}
 	else
 	{
 		ROS_ERROR("Failed to call service");
 		return ;
 	}
-	sleep(4);
 	std::cout<<"eerst naar boven dan naar doel"<<std::endl;
 	std::cout<<foundAngles<<std::endl;
 	std::cout<<current.first << "|" << current.second <<std::endl;
 	std::cout<<found.first << "|" << found.second <<std::endl;
+
+
+	// ga naar doel
+	ros::ServiceClient client6;
+	ros::NodeHandle n6;
+	robot_arm_aansturing::position pos6;
+	client6 = n6.serviceClient<robot_arm_aansturing::position>(
+			"add_position_task");
+
+	pos6.request.time = 3000;
+	pos6.request.angles.push_back(endAngleBase); //base
+	pos6.request.angles.push_back(foundAngles.at(0).at(0));
+	pos6.request.angles.push_back(foundAngles.at(1).at(0));
+	pos6.request.angles.push_back(-foundAngles.at(2).at(0));
+	pos6.request.angles.push_back(1);
+	pos6.request.angles.push_back(0);
+	if (client6.call(pos6))
+	{
+		ROS_INFO("accepted position: %d", (long int )pos6.response.accepted);
+	}
+	else
+	{
+		ROS_ERROR("Failed to call service");
+		return ;
+	}
+	std::cout<<"eerst naar boven dan naar doel"<<std::endl;
+	std::cout<<foundAngles<<std::endl;
+	std::cout<<current.first << "|" << current.second <<std::endl;
+	std::cout<<found.first << "|" << found.second <<std::endl;
+	std::cout<<"ben bij doel"<<std::endl;
 }
 Kinematic::~Kinematic() {
 	// TODO Auto-generated destructor stub

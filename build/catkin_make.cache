@@ -1,0 +1,2 @@
+wor-r_bp2_ws/src/robot_arm_aansturing
+-DCATKIN_DEVEL_PREFIX=/home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/devel -DCMAKE_INSTALL_PREFIX=/home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/install -G Unix Makefiles

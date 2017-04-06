@@ -8,6 +8,8 @@
 #include <iostream>
 #include "Kinematic.hpp"
 #include <ros/ros.h>
+#include <robot_arm_aansturing/position.h>
+#include <robot_arm_aansturing/command.h>
 
 int main(int argc, char **argv)
 {
@@ -17,7 +19,31 @@ int main(int argc, char **argv)
 	{
 		try
 		{
+			//3000 90 -27 83 89 0 0
+			ros::ServiceClient client;
+			ros::NodeHandle n;
+			client = n.serviceClient<robot_arm_aansturing::position>(
+					"add_position_task");
+			// ga naar start positie
+			robot_arm_aansturing::position pos;
+			pos.request.time = 3000;
+			pos.request.angles.push_back(90); //base
+			pos.request.angles.push_back(-27);
+			pos.request.angles.push_back(83);
+			pos.request.angles.push_back(89);
+			pos.request.angles.push_back(1);
+			pos.request.angles.push_back(0);
 
+			if (client.call(pos))
+			{
+				ROS_INFO("accepted position: %d", (long int )pos.response.accepted);
+			}
+			else
+			{
+				ROS_ERROR("Failed to call service");
+				return 1 ;
+			}
+			sleep(4);
 			//14.5 cm eerste arm shoulder servo to elbow sevo
 			//18.7 cm tweede arm elbow servo to wrist servo
 			//12   cm derde arm  wrist servo to uit einde van gripper
@@ -30,21 +56,22 @@ int main(int argc, char **argv)
 				//Reminder Stand van de hoeken heeft wel effect op of doel haalbaar is
 				Matrix<3,1,double> currentPose (
 												{
-													{{atof(argv[2])}},			//hoek van shoulder
-													{{atof(argv[3])}},			//hoek van elbow
-													{{atof(argv[4])}}			//hoek van wrist
+													{{-27}},			//hoek van shoulder
+													{{83}},			//hoek van elbow
+													{{89}}			//hoek van wrist
 												}
 												);
-				Matrix<2,1,double> g({atof(argv[5]),atof(argv[6])});
+				Matrix<2,1,double> g1({atof(argv[2]),atof(argv[3])});
+				Matrix<2,1,double> g2({atof(argv[5]),atof(argv[6])});
 
-				robotArm.executeMotionPlanning(x0,y0,beta,precision,currentPose,g);
+				robotArm.executeMotionPlanning(x0,y0,beta,precision,atof(argv[1]),currentPose,g1,g2,atof(argv[4]));
 
 
-				//			auto schuine_zijde = std::sqrt(std::pow(20,2) + std::pow(20,2));
-				//			std::cout<<schuine_zijde<<std::endl;
-				//			auto getal = 20/schuine_zijde;
-				//			std::cout<<getal<<std::endl;
-				//			std::cout<<std::acos(getal) * 180 / PI<<std::endl;
+//							auto schuine_zijde = std::sqrt(std::pow(20,2) + std::pow(20,2));
+//							std::cout<<schuine_zijde<<std::endl;
+//							auto getal = 20/schuine_zijde;
+//							std::cout<<getal<<std::endl;
+//							std::cout<<std::acos(getal) * 180 / PI<<std::endl;
 
 
 		}
@@ -55,7 +82,7 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		ROS_INFO("usage: Base_angle shoulder_angle elbow_angle wrist_angle target_x target_y \n\r");
+		ROS_INFO("usage: Base_start_angle target_x target_y goal_base_angle goal_x goal_y \n\r");
 		return 1;
 	}
 	return 0;

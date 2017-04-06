@@ -67,6 +67,12 @@ robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/Kinematic.cpp.
 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/Kinematic.cpp.o: /opt/ros/kinetic/include/xmlrpcpp/XmlRpcDecl.h
 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/Kinematic.cpp.o: /opt/ros/kinetic/include/xmlrpcpp/XmlRpcValue.h
 
+robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/devel/include/robot_arm_aansturing/command.h
+robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/devel/include/robot_arm_aansturing/commandRequest.h
+robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/devel/include/robot_arm_aansturing/commandResponse.h
+robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/devel/include/robot_arm_aansturing/position.h
+robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/devel/include/robot_arm_aansturing/positionRequest.h
+robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/devel/include/robot_arm_aansturing/positionResponse.h
 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/src/robot_arm_aansturing/src/kinematics/Kinematic.hpp
 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/src/robot_arm_aansturing/src/kinematics/Matrix.hpp
 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/src/robot_arm_aansturing/src/kinematics/main.cpp
@@ -88,6 +94,7 @@ robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /o
 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /opt/ros/kinetic/include/ros/message.h
 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /opt/ros/kinetic/include/ros/message_event.h
 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /opt/ros/kinetic/include/ros/message_forward.h
+robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /opt/ros/kinetic/include/ros/message_operations.h
 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /opt/ros/kinetic/include/ros/message_traits.h
 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /opt/ros/kinetic/include/ros/names.h
 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o: /opt/ros/kinetic/include/ros/node_handle.h

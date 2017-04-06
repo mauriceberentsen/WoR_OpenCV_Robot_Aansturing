@@ -121,6 +121,10 @@ Kinematic.hpp
 /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/src/robot_arm_aansturing/src/kinematics/Kinematic.hpp
 ros/ros.h
 -
+robot_arm_aansturing/position.h
+-
+robot_arm_aansturing/command.h
+-
 
 /opt/ros/kinetic/include/ros/advertise_options.h
 ros/forwards.h
