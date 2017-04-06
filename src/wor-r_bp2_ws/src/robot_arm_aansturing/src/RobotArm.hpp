@@ -19,7 +19,7 @@ struct Task;
 class RobotArm
 {
 public:
-	RobotArm(std::initializer_list<Servo> sl,std::string serialPort ="/dev/ttyUSB0",unsigned long baudrate = 115200 );
+	RobotArm(std::initializer_list<Servo> sl,std::string serialPort ="/dev/ttyUSB1",unsigned long baudrate = 115200 );
 	virtual ~RobotArm();
 	void gotoPosition(const Task& aTask);
 	bool isArmMoving();

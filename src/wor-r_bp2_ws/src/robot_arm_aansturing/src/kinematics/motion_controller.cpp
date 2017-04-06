@@ -11,6 +11,36 @@
 #include <robot_arm_aansturing/position.h>
 #include <robot_arm_aansturing/command.h>
 
+
+static void go_to_start_pos(int argc, char** argv)
+{
+	ros::init(argc,argv,"kinematic_node");
+	std::cout<<"ben in de try"<<std::endl;
+	//3000 90 -27 83 89 0 0
+	ros::ServiceClient client;
+	ros::NodeHandle n;
+	client = n.serviceClient<robot_arm_aansturing::position>(
+			"add_position_task");
+	// ga naar start positie
+	robot_arm_aansturing::position pos;
+	pos.request.time = 3000;
+	pos.request.angles.push_back(90); //base
+	pos.request.angles.push_back(-27);
+	pos.request.angles.push_back(83);
+	pos.request.angles.push_back(-89);
+	pos.request.angles.push_back(1);
+	pos.request.angles.push_back(0);
+
+	if (client.call(pos))
+	{
+		ROS_INFO("accepted position: %d", (long int )pos.response.accepted);
+	}
+	else
+	{
+		ROS_ERROR("Failed to call service");
+		return  ;
+	}
+}
 static void execute_motion(int argc, char** argv ,double baseStartAngle,double targetX ,double targetY,double goalBaseAngle,double goalX, double goalY)
 {
 	std::cout<<"in functie"<<std::endl;
@@ -20,31 +50,7 @@ static void execute_motion(int argc, char** argv ,double baseStartAngle,double t
 	std::cout<<"voor de try"<<std::endl;
 		try
 		{
-			std::cout<<"ben in de try"<<std::endl;
-			//3000 90 -27 83 89 0 0
-			ros::ServiceClient client;
-			ros::NodeHandle n;
-			client = n.serviceClient<robot_arm_aansturing::position>(
-					"add_position_task");
-			// ga naar start positie
-			robot_arm_aansturing::position pos;
-			pos.request.time = 3000;
-			pos.request.angles.push_back(90); //base
-			pos.request.angles.push_back(-27);
-			pos.request.angles.push_back(83);
-			pos.request.angles.push_back(89);
-			pos.request.angles.push_back(1);
-			pos.request.angles.push_back(0);
 
-			if (client.call(pos))
-			{
-				ROS_INFO("accepted position: %d", (long int )pos.response.accepted);
-			}
-			else
-			{
-				ROS_ERROR("Failed to call service");
-				return  ;
-			}
 			//sleep(4);
 			//14.5 cm eerste arm shoulder servo to elbow sevo
 			//18.7 cm tweede arm elbow servo to wrist servo
@@ -78,7 +84,7 @@ static void execute_motion(int argc, char** argv ,double baseStartAngle,double t
 				pos2.request.angles.push_back(90); //base
 				pos2.request.angles.push_back(-27);
 				pos2.request.angles.push_back(83);
-				pos2.request.angles.push_back(89);
+				pos2.request.angles.push_back(-89);
 				pos2.request.angles.push_back(1);
 				pos2.request.angles.push_back(0);
 

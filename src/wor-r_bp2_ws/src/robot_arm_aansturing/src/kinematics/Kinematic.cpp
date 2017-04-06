@@ -118,31 +118,59 @@ void Kinematic::executeMotionPlanning(double x0, double y0, double beta,
 	//3000 0 45 45 45 0 0
 	//robot foundAngles laten uitvoeren
 
+//	ros::ServiceClient client7;
+//	ros::NodeHandle n7;
+//	client7 = n7.serviceClient<robot_arm_aansturing::position>(
+//			"add_position_task");
+//
+//	robot_arm_aansturing::position pos7;
+//	//ga naar object draaien
+//	pos7.request.time = 3000;
+//	pos7.request.angles.push_back(90); //base
+//	pos7.request.angles.push_back(-27);
+//	pos7.request.angles.push_back(83);
+//	pos7.request.angles.push_back(-89);
+//	pos7.request.angles.push_back(1);
+//	pos7.request.angles.push_back(0);
+//	if (client7.call(pos7))
+//	{
+//		ROS_INFO("accepted position: %d", (long int )pos.response.accepted);
+//	}
+//	else
+//	{
+//		ROS_ERROR("Failed to call service");
+//		return ;
+//	}
+//
+//	std::cout<<"naar object gedraait"<<std::endl;
+	//ga omhooog---------------------------------------------------------
+	aCurrentPoseAngles.at(0).at(0) = -30;
 	ros::ServiceClient client7;
 	ros::NodeHandle n7;
+	robot_arm_aansturing::position pos7;
 	client7 = n7.serviceClient<robot_arm_aansturing::position>(
 			"add_position_task");
 
-	robot_arm_aansturing::position pos7;
-	//ga naar object draaien
 	pos7.request.time = 3000;
-	pos7.request.angles.push_back(90); //base
-	pos7.request.angles.push_back(-27);
-	pos7.request.angles.push_back(83);
-	pos7.request.angles.push_back(89);
-	pos7.request.angles.push_back(1);
+	pos7.request.angles.push_back(startAngleBase); //base
+	pos7.request.angles.push_back(aCurrentPoseAngles.at(0).at(0));
+	pos7.request.angles.push_back(aCurrentPoseAngles.at(1).at(0));
+	pos7.request.angles.push_back(-aCurrentPoseAngles.at(2).at(0));
 	pos7.request.angles.push_back(0);
+	pos7.request.angles.push_back(0);
+
+	std::cout<<aCurrentPoseAngles<<std::endl;
+	std::cout<<current.first << "|" << current.second <<std::endl;
+	std::cout<<found.first << "|" << found.second <<std::endl;
 	if (client7.call(pos7))
 	{
-		ROS_INFO("accepted position: %d", (long int )pos.response.accepted);
+		ROS_INFO("accepted position: %d", (long int )pos7.response.accepted);
 	}
 	else
 	{
 		ROS_ERROR("Failed to call service");
 		return ;
 	}
-
-	std::cout<<"naar object gedraait"<<std::endl;
 
 	//ga naar object
 	pos.request.time = 3000;
@@ -323,7 +351,37 @@ void Kinematic::executeMotionPlanning(double x0, double y0, double beta,
 	std::cout<<current.first << "|" << current.second <<std::endl;
 	std::cout<<found.first << "|" << found.second <<std::endl;
 	std::cout<<"ben bij doel"<<std::endl;
+
+	//ga omhooog---------------------------------------------------------
+	ros::ServiceClient client8;
+	ros::NodeHandle n8;
+	robot_arm_aansturing::position pos8;
+	client8 = n8.serviceClient<robot_arm_aansturing::position>(
+			"add_position_task");
+
+	pos8.request.time = 3000;
+	pos8.request.angles.push_back(endAngleBase); //base
+	pos8.request.angles.push_back(foundAngles.at(0).at(0));
+	pos8.request.angles.push_back(-30); // ga omhoog
+	pos8.request.angles.push_back(-foundAngles.at(2).at(0));
+	pos8.request.angles.push_back(1);
+	pos8.request.angles.push_back(0);
+	std::cout<<current.first << "|" << current.second <<std::endl;
+	std::cout<<found.first << "|" << found.second <<std::endl;
+	if (client8.call(pos8))
+	{
+		ROS_INFO("accepted position: %d", (long int )pos8.response.accepted);
+	}
+	else
+	{
+		ROS_ERROR("Failed to call service");
+		return ;
+	}
+
 }
+
+
+
 Kinematic::~Kinematic() {
 	// TODO Auto-generated destructor stub
 }

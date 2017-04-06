@@ -32,6 +32,8 @@ int main(int argc, char **argv) {
 
 	picture_raw = getCameraFeed(1);
 
+	go_to_start_pos(argc,argv);
+
 	if(argc > 1)
 	{
 		Configuration d(argv[1], picture_raw);
@@ -43,7 +45,8 @@ int main(int argc, char **argv) {
 
 			std::cout<< "vul eerst een kleur in daarna een figuur"<<std::endl;
 			std::getline(std::cin, input);
-			input = "blauw vierkant";
+			//input = "blauw vierkant";
+			std::cout<<input<<std::endl;
 			picture_raw = getCameraFeed(1);
 			std::stringstream  ss(input);
 			Imageinfo info = getImageInfo(picture_raw);
