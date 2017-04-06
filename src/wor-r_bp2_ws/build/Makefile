@@ -712,19 +712,6 @@ robot_arm_aansturing_generate_messages/fast:
 .PHONY : robot_arm_aansturing_generate_messages/fast
 
 #=============================================================================
-# Target rules for targets named kinematic_node
-
-# Build rule for target.
-kinematic_node: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 kinematic_node
-.PHONY : kinematic_node
-
-# fast build rule for target.
-kinematic_node/fast:
-	$(MAKE) -f robot_arm_aansturing/CMakeFiles/kinematic_node.dir/build.make robot_arm_aansturing/CMakeFiles/kinematic_node.dir/build
-.PHONY : kinematic_node/fast
-
-#=============================================================================
 # Target rules for targets named actionlib_generate_messages_cpp
 
 # Build rule for target.
@@ -998,6 +985,19 @@ _robot_arm_aansturing_generate_messages_check_deps_positionAction/fast:
 .PHONY : _robot_arm_aansturing_generate_messages_check_deps_positionAction/fast
 
 #=============================================================================
+# Target rules for targets named vision_node
+
+# Build rule for target.
+vision_node: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 vision_node
+.PHONY : vision_node
+
+# fast build rule for target.
+vision_node/fast:
+	$(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/build
+.PHONY : vision_node/fast
+
+#=============================================================================
 # Target rules for targets named _robot_arm_aansturing_generate_messages_check_deps_AveragingActionGoal
 
 # Build rule for target.
@@ -1143,7 +1143,6 @@ help:
 	@echo "... actionlib_generate_messages_py"
 	@echo "... rosgraph_msgs_generate_messages_eus"
 	@echo "... robot_arm_aansturing_generate_messages"
-	@echo "... kinematic_node"
 	@echo "... actionlib_generate_messages_cpp"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_FibonacciFeedback"
 	@echo "... actionlib_msgs_generate_messages_nodejs"
@@ -1165,6 +1164,7 @@ help:
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_positionResult"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_FibonacciGoal"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_positionAction"
+	@echo "... vision_node"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_AveragingActionGoal"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_Test"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_FibonacciActionGoal"

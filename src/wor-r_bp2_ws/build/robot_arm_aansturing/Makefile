@@ -691,21 +691,6 @@ robot_arm_aansturing_generate_messages/fast:
 .PHONY : robot_arm_aansturing_generate_messages/fast
 
 # Convenience name for target.
-robot_arm_aansturing/CMakeFiles/kinematic_node.dir/rule:
-	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f CMakeFiles/Makefile2 robot_arm_aansturing/CMakeFiles/kinematic_node.dir/rule
-.PHONY : robot_arm_aansturing/CMakeFiles/kinematic_node.dir/rule
-
-# Convenience name for target.
-kinematic_node: robot_arm_aansturing/CMakeFiles/kinematic_node.dir/rule
-
-.PHONY : kinematic_node
-
-# fast build rule for target.
-kinematic_node/fast:
-	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/kinematic_node.dir/build.make robot_arm_aansturing/CMakeFiles/kinematic_node.dir/build
-.PHONY : kinematic_node/fast
-
-# Convenience name for target.
 robot_arm_aansturing/CMakeFiles/actionlib_generate_messages_cpp.dir/rule:
 	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f CMakeFiles/Makefile2 robot_arm_aansturing/CMakeFiles/actionlib_generate_messages_cpp.dir/rule
 .PHONY : robot_arm_aansturing/CMakeFiles/actionlib_generate_messages_cpp.dir/rule
@@ -1019,6 +1004,21 @@ _robot_arm_aansturing_generate_messages_check_deps_positionAction: robot_arm_aan
 _robot_arm_aansturing_generate_messages_check_deps_positionAction/fast:
 	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/_robot_arm_aansturing_generate_messages_check_deps_positionAction.dir/build.make robot_arm_aansturing/CMakeFiles/_robot_arm_aansturing_generate_messages_check_deps_positionAction.dir/build
 .PHONY : _robot_arm_aansturing_generate_messages_check_deps_positionAction/fast
+
+# Convenience name for target.
+robot_arm_aansturing/CMakeFiles/vision_node.dir/rule:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f CMakeFiles/Makefile2 robot_arm_aansturing/CMakeFiles/vision_node.dir/rule
+.PHONY : robot_arm_aansturing/CMakeFiles/vision_node.dir/rule
+
+# Convenience name for target.
+vision_node: robot_arm_aansturing/CMakeFiles/vision_node.dir/rule
+
+.PHONY : vision_node
+
+# fast build rule for target.
+vision_node/fast:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/build
+.PHONY : vision_node/fast
 
 # Convenience name for target.
 robot_arm_aansturing/CMakeFiles/_robot_arm_aansturing_generate_messages_check_deps_AveragingActionGoal.dir/rule:
@@ -1482,7 +1482,7 @@ src/kinematics/Kinematic.o: src/kinematics/Kinematic.cpp.o
 
 # target to build an object file
 src/kinematics/Kinematic.cpp.o:
-	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/kinematic_node.dir/build.make robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/Kinematic.cpp.o
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/kinematics/Kinematic.cpp.o
 .PHONY : src/kinematics/Kinematic.cpp.o
 
 src/kinematics/Kinematic.i: src/kinematics/Kinematic.cpp.i
@@ -1491,7 +1491,7 @@ src/kinematics/Kinematic.i: src/kinematics/Kinematic.cpp.i
 
 # target to preprocess a source file
 src/kinematics/Kinematic.cpp.i:
-	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/kinematic_node.dir/build.make robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/Kinematic.cpp.i
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/kinematics/Kinematic.cpp.i
 .PHONY : src/kinematics/Kinematic.cpp.i
 
 src/kinematics/Kinematic.s: src/kinematics/Kinematic.cpp.s
@@ -1500,35 +1500,35 @@ src/kinematics/Kinematic.s: src/kinematics/Kinematic.cpp.s
 
 # target to generate assembly for a file
 src/kinematics/Kinematic.cpp.s:
-	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/kinematic_node.dir/build.make robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/Kinematic.cpp.s
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/kinematics/Kinematic.cpp.s
 .PHONY : src/kinematics/Kinematic.cpp.s
 
-src/kinematics/main.o: src/kinematics/main.cpp.o
+src/kinematics/motion_controller.o: src/kinematics/motion_controller.cpp.o
 
-.PHONY : src/kinematics/main.o
+.PHONY : src/kinematics/motion_controller.o
 
 # target to build an object file
-src/kinematics/main.cpp.o:
-	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/kinematic_node.dir/build.make robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.o
-.PHONY : src/kinematics/main.cpp.o
+src/kinematics/motion_controller.cpp.o:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/kinematics/motion_controller.cpp.o
+.PHONY : src/kinematics/motion_controller.cpp.o
 
-src/kinematics/main.i: src/kinematics/main.cpp.i
+src/kinematics/motion_controller.i: src/kinematics/motion_controller.cpp.i
 
-.PHONY : src/kinematics/main.i
+.PHONY : src/kinematics/motion_controller.i
 
 # target to preprocess a source file
-src/kinematics/main.cpp.i:
-	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/kinematic_node.dir/build.make robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.i
-.PHONY : src/kinematics/main.cpp.i
+src/kinematics/motion_controller.cpp.i:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/kinematics/motion_controller.cpp.i
+.PHONY : src/kinematics/motion_controller.cpp.i
 
-src/kinematics/main.s: src/kinematics/main.cpp.s
+src/kinematics/motion_controller.s: src/kinematics/motion_controller.cpp.s
 
-.PHONY : src/kinematics/main.s
+.PHONY : src/kinematics/motion_controller.s
 
 # target to generate assembly for a file
-src/kinematics/main.cpp.s:
-	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/kinematic_node.dir/build.make robot_arm_aansturing/CMakeFiles/kinematic_node.dir/src/kinematics/main.cpp.s
-.PHONY : src/kinematics/main.cpp.s
+src/kinematics/motion_controller.cpp.s:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/kinematics/motion_controller.cpp.s
+.PHONY : src/kinematics/motion_controller.cpp.s
 
 src/serial_node.o: src/serial_node.cpp.o
 
@@ -1556,6 +1556,222 @@ src/serial_node.s: src/serial_node.cpp.s
 src/serial_node.cpp.s:
 	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/serial_server_node.dir/build.make robot_arm_aansturing/CMakeFiles/serial_server_node.dir/src/serial_node.cpp.s
 .PHONY : src/serial_node.cpp.s
+
+src/vision/Configuration.o: src/vision/Configuration.cpp.o
+
+.PHONY : src/vision/Configuration.o
+
+# target to build an object file
+src/vision/Configuration.cpp.o:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/Configuration.cpp.o
+.PHONY : src/vision/Configuration.cpp.o
+
+src/vision/Configuration.i: src/vision/Configuration.cpp.i
+
+.PHONY : src/vision/Configuration.i
+
+# target to preprocess a source file
+src/vision/Configuration.cpp.i:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/Configuration.cpp.i
+.PHONY : src/vision/Configuration.cpp.i
+
+src/vision/Configuration.s: src/vision/Configuration.cpp.s
+
+.PHONY : src/vision/Configuration.s
+
+# target to generate assembly for a file
+src/vision/Configuration.cpp.s:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/Configuration.cpp.s
+.PHONY : src/vision/Configuration.cpp.s
+
+src/vision/SearchQuery.o: src/vision/SearchQuery.cpp.o
+
+.PHONY : src/vision/SearchQuery.o
+
+# target to build an object file
+src/vision/SearchQuery.cpp.o:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/SearchQuery.cpp.o
+.PHONY : src/vision/SearchQuery.cpp.o
+
+src/vision/SearchQuery.i: src/vision/SearchQuery.cpp.i
+
+.PHONY : src/vision/SearchQuery.i
+
+# target to preprocess a source file
+src/vision/SearchQuery.cpp.i:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/SearchQuery.cpp.i
+.PHONY : src/vision/SearchQuery.cpp.i
+
+src/vision/SearchQuery.s: src/vision/SearchQuery.cpp.s
+
+.PHONY : src/vision/SearchQuery.s
+
+# target to generate assembly for a file
+src/vision/SearchQuery.cpp.s:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/SearchQuery.cpp.s
+.PHONY : src/vision/SearchQuery.cpp.s
+
+src/vision/colourrange.o: src/vision/colourrange.cpp.o
+
+.PHONY : src/vision/colourrange.o
+
+# target to build an object file
+src/vision/colourrange.cpp.o:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/colourrange.cpp.o
+.PHONY : src/vision/colourrange.cpp.o
+
+src/vision/colourrange.i: src/vision/colourrange.cpp.i
+
+.PHONY : src/vision/colourrange.i
+
+# target to preprocess a source file
+src/vision/colourrange.cpp.i:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/colourrange.cpp.i
+.PHONY : src/vision/colourrange.cpp.i
+
+src/vision/colourrange.s: src/vision/colourrange.cpp.s
+
+.PHONY : src/vision/colourrange.s
+
+# target to generate assembly for a file
+src/vision/colourrange.cpp.s:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/colourrange.cpp.s
+.PHONY : src/vision/colourrange.cpp.s
+
+src/vision/figurenfilter.o: src/vision/figurenfilter.cpp.o
+
+.PHONY : src/vision/figurenfilter.o
+
+# target to build an object file
+src/vision/figurenfilter.cpp.o:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/figurenfilter.cpp.o
+.PHONY : src/vision/figurenfilter.cpp.o
+
+src/vision/figurenfilter.i: src/vision/figurenfilter.cpp.i
+
+.PHONY : src/vision/figurenfilter.i
+
+# target to preprocess a source file
+src/vision/figurenfilter.cpp.i:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/figurenfilter.cpp.i
+.PHONY : src/vision/figurenfilter.cpp.i
+
+src/vision/figurenfilter.s: src/vision/figurenfilter.cpp.s
+
+.PHONY : src/vision/figurenfilter.s
+
+# target to generate assembly for a file
+src/vision/figurenfilter.cpp.s:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/figurenfilter.cpp.s
+.PHONY : src/vision/figurenfilter.cpp.s
+
+src/vision/findGoals.o: src/vision/findGoals.cpp.o
+
+.PHONY : src/vision/findGoals.o
+
+# target to build an object file
+src/vision/findGoals.cpp.o:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/findGoals.cpp.o
+.PHONY : src/vision/findGoals.cpp.o
+
+src/vision/findGoals.i: src/vision/findGoals.cpp.i
+
+.PHONY : src/vision/findGoals.i
+
+# target to preprocess a source file
+src/vision/findGoals.cpp.i:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/findGoals.cpp.i
+.PHONY : src/vision/findGoals.cpp.i
+
+src/vision/findGoals.s: src/vision/findGoals.cpp.s
+
+.PHONY : src/vision/findGoals.s
+
+# target to generate assembly for a file
+src/vision/findGoals.cpp.s:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/findGoals.cpp.s
+.PHONY : src/vision/findGoals.cpp.s
+
+src/vision/kleurenfilter.o: src/vision/kleurenfilter.cpp.o
+
+.PHONY : src/vision/kleurenfilter.o
+
+# target to build an object file
+src/vision/kleurenfilter.cpp.o:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/kleurenfilter.cpp.o
+.PHONY : src/vision/kleurenfilter.cpp.o
+
+src/vision/kleurenfilter.i: src/vision/kleurenfilter.cpp.i
+
+.PHONY : src/vision/kleurenfilter.i
+
+# target to preprocess a source file
+src/vision/kleurenfilter.cpp.i:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/kleurenfilter.cpp.i
+.PHONY : src/vision/kleurenfilter.cpp.i
+
+src/vision/kleurenfilter.s: src/vision/kleurenfilter.cpp.s
+
+.PHONY : src/vision/kleurenfilter.s
+
+# target to generate assembly for a file
+src/vision/kleurenfilter.cpp.s:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/kleurenfilter.cpp.s
+.PHONY : src/vision/kleurenfilter.cpp.s
+
+src/vision/main.o: src/vision/main.cpp.o
+
+.PHONY : src/vision/main.o
+
+# target to build an object file
+src/vision/main.cpp.o:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/main.cpp.o
+.PHONY : src/vision/main.cpp.o
+
+src/vision/main.i: src/vision/main.cpp.i
+
+.PHONY : src/vision/main.i
+
+# target to preprocess a source file
+src/vision/main.cpp.i:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/main.cpp.i
+.PHONY : src/vision/main.cpp.i
+
+src/vision/main.s: src/vision/main.cpp.s
+
+.PHONY : src/vision/main.s
+
+# target to generate assembly for a file
+src/vision/main.cpp.s:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/main.cpp.s
+.PHONY : src/vision/main.cpp.s
+
+src/vision/searchAruco.o: src/vision/searchAruco.cpp.o
+
+.PHONY : src/vision/searchAruco.o
+
+# target to build an object file
+src/vision/searchAruco.cpp.o:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/searchAruco.cpp.o
+.PHONY : src/vision/searchAruco.cpp.o
+
+src/vision/searchAruco.i: src/vision/searchAruco.cpp.i
+
+.PHONY : src/vision/searchAruco.i
+
+# target to preprocess a source file
+src/vision/searchAruco.cpp.i:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/searchAruco.cpp.i
+.PHONY : src/vision/searchAruco.cpp.i
+
+src/vision/searchAruco.s: src/vision/searchAruco.cpp.s
+
+.PHONY : src/vision/searchAruco.s
+
+# target to generate assembly for a file
+src/vision/searchAruco.cpp.s:
+	cd /home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/build && $(MAKE) -f robot_arm_aansturing/CMakeFiles/vision_node.dir/build.make robot_arm_aansturing/CMakeFiles/vision_node.dir/src/vision/searchAruco.cpp.s
+.PHONY : src/vision/searchAruco.cpp.s
 
 # Help Target
 help:
@@ -1602,7 +1818,6 @@ help:
 	@echo "... actionlib_generate_messages_py"
 	@echo "... rosgraph_msgs_generate_messages_eus"
 	@echo "... robot_arm_aansturing_generate_messages"
-	@echo "... kinematic_node"
 	@echo "... actionlib_generate_messages_cpp"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_FibonacciFeedback"
 	@echo "... actionlib_msgs_generate_messages_nodejs"
@@ -1627,6 +1842,7 @@ help:
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_positionResult"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_FibonacciGoal"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_positionAction"
+	@echo "... vision_node"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_AveragingActionGoal"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_Test"
 	@echo "... _robot_arm_aansturing_generate_messages_check_deps_FibonacciActionGoal"
@@ -1676,12 +1892,36 @@ help:
 	@echo "... src/kinematics/Kinematic.o"
 	@echo "... src/kinematics/Kinematic.i"
 	@echo "... src/kinematics/Kinematic.s"
-	@echo "... src/kinematics/main.o"
-	@echo "... src/kinematics/main.i"
-	@echo "... src/kinematics/main.s"
+	@echo "... src/kinematics/motion_controller.o"
+	@echo "... src/kinematics/motion_controller.i"
+	@echo "... src/kinematics/motion_controller.s"
 	@echo "... src/serial_node.o"
 	@echo "... src/serial_node.i"
 	@echo "... src/serial_node.s"
+	@echo "... src/vision/Configuration.o"
+	@echo "... src/vision/Configuration.i"
+	@echo "... src/vision/Configuration.s"
+	@echo "... src/vision/SearchQuery.o"
+	@echo "... src/vision/SearchQuery.i"
+	@echo "... src/vision/SearchQuery.s"
+	@echo "... src/vision/colourrange.o"
+	@echo "... src/vision/colourrange.i"
+	@echo "... src/vision/colourrange.s"
+	@echo "... src/vision/figurenfilter.o"
+	@echo "... src/vision/figurenfilter.i"
+	@echo "... src/vision/figurenfilter.s"
+	@echo "... src/vision/findGoals.o"
+	@echo "... src/vision/findGoals.i"
+	@echo "... src/vision/findGoals.s"
+	@echo "... src/vision/kleurenfilter.o"
+	@echo "... src/vision/kleurenfilter.i"
+	@echo "... src/vision/kleurenfilter.s"
+	@echo "... src/vision/main.o"
+	@echo "... src/vision/main.i"
+	@echo "... src/vision/main.s"
+	@echo "... src/vision/searchAruco.o"
+	@echo "... src/vision/searchAruco.i"
+	@echo "... src/vision/searchAruco.s"
 .PHONY : help
 
 
