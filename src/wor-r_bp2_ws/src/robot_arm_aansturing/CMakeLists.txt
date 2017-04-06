@@ -15,6 +15,8 @@ find_package(catkin REQUIRED COMPONENTS
   actionlib_msgs
 )
 
+find_package( OpenCV REQUIRED)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system thread regex date_time)
 
@@ -130,6 +132,7 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
  # ${BOOST_INCLUDE_DIRS}
 )
 
@@ -162,12 +165,25 @@ add_executable(tutorial_client
 	src/client/Client.cpp
 )
 
-add_executable(kinematic_node
-	src/kinematics/main.cpp
+#add_executable(kinematic_node
+#	src/kinematics/main.cpp
+#	src/kinematics/Kinematic.cpp
+#	src/kinematics/Matrix.hpp
+#	)
+	
+add_executable(vision_node
+	src/vision/main.cpp
+	src/vision/colourrange.cpp
+	src/vision/Configuration.cpp
+	src/vision/figurenfilter.cpp
+	src/vision/findGoals.cpp
+	src/vision/kleurenfilter.cpp
+	src/vision/searchAruco.cpp
+	src/vision/SearchQuery.cpp
 	src/kinematics/Kinematic.cpp
-	src/kinematics/Matrix.hpp
+ 	src/kinematics/Matrix.hpp
+ 	src/kinematics/motion_controller.cpp
 	)
-
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(robot_arm_aansturing_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
@@ -175,17 +191,20 @@ add_executable(kinematic_node
 #add_dependencies(serialcomm_server robot_arm_aansturing_gencpp)
 add_dependencies(serial_server_node robot_arm_aansturing_gencpp)
 add_dependencies(tutorial_client robot_arm_aansturing_gencpp)
-add_dependencies(kinematic_node robot_arm_aansturing_gencpp)
+#add_dependencies(kinematic_node robot_arm_aansturing_gencpp)
+add_dependencies(vision_node robot_arm_aansturing_gencpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(robot_arm_aansturing_node
-#   ${catkin_LIBRARIES}
-# )
+#  ${catkin_LIBRARIES}
+#)
 
 #target_link_libraries(serialcomm_server ${catkin_LIBRARIES})
 target_link_libraries(serial_server_node ${catkin_LIBRARIES})
 target_link_libraries(tutorial_client ${catkin_LIBRARIES})
-target_link_libraries(kinematic_node ${catkin_LIBRARIES})
+#target_link_libraries(kinematic_node ${catkin_LIBRARIES})
+target_link_libraries(vision_node ${catkin_LIBRARIES}
+                                    ${OpenCV_LIBS})
 
 #############
 ## Install ##

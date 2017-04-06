@@ -328,5 +328,3 @@ Kinematic::~Kinematic() {
 	// TODO Auto-generated destructor stub
 }
 
-
-

@@ -23,6 +23,8 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/agit/Documents/github/WoR_OpenCV_Robot_Aansturing/src/wor-r_bp2_ws/devel/include"
   "/opt/ros/kinetic/include"
   "/opt/ros/kinetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
+  "/opt/ros/kinetic/include/opencv-3.2.0"
+  "/opt/ros/kinetic/include/opencv-3.2.0/opencv"
   )
 
 # Targets to which this target links.
