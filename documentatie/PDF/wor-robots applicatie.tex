@@ -34,7 +34,7 @@ Voor de eindopdracht van WoR-Robots is er de opdracht om een applicatie te lever
 \section{Applicatie design}
 \subsection{Het berekenen van de beweging van de robotarm}
 
-Om het pad te bereken die de robotarm moet afleggen moet er eerst een configuratie gevonden worden. Dit omdat de robot niet aangestuurd wordt met co\"ordinaten maar hij de hoeken van de arm moet ontvangen. Vervolgens kan er met het A* algoritme berekend wordt het pad naar deze configuratie berekend. 
+Om het pad te bereken die de robotarm moet afleggen moet er eerst een configuratie gevonden worden. Dit omdat de robot niet aangestuurd wordt met co\"ordinaten maar hij de hoeken van de arm moet ontvangen. Allereerst zal er nu eerst verklaard worden hoe er van co/"ordinaten naar een configuratie gerekend wordt.
 
 \subsubsection{Het berekenen van de nieuwe configuratie}
 Voor het berekenen van de configuratie word er eerst een twee dimensionaal punt bepaald vanaf het zijaanzicht. In het twee dimensionale stelsel wordt er gewerkt met co\"ordinaten X en Y. Deze co\"odinaten zetten we om naar een configuratie met behulp van het volgende algoritme dit daarna per punt wordt behandeld.
@@ -84,8 +84,88 @@ Compute new e vector \\
     Tel hier de het verschil in de configuratie bij de oude configuratie bij op.
     \item Compute new e vector \\
     Gebruik forward kinematics om te controleren of de gevonden configuratie klopt
+\end{enumerate}       
 
-\end{enumerate}          
+\subsubsection{het bepalen van de co\"ordinaten}
+	Om tot een berekening komen moeten er co\"ordinaten bekend zijn van het op te pakken object en het doel. Hiervoor wordt er vanuit gegaan dat het vinden van deze objecten gewoon lukt en dit pixel co\"ordinaten oplevert. In het programma wordt gebruik gemaakt van \href{http://docs.opencv.org/3.1.0/d5/dae/tutorial_aruco_detection.html}{aruco}. Dit is een libary van opencv die gemakelijk herkeningspunten aanbiedt. Als eerste wordt er op basis van deze vondst de verhouding tussen pixels en milimeters berekend. Het is bekend dat de geprinte aruco 42mm is dus het pixel naar mm ratio is dus $Aruco_{width} / 42$  
+	Dit resulteert in een ratio die vanaf nu $R$ genoemd wordt. Vervolgens kan de positie correctie berekend worden ervan uit gaand dat de aruco precies op de co\"ordinaten $(10,0)$ ligt. 
+	De correctie voor het Y co\"ordinaat is heel simpel dit is het Y punt waarop aruco gevonden is.
+	De correctie voor het X co\"ordinaat moet een kleine correctie krijgen omdat deze 10cm voor de base van de robot ligt. De berekening hiervoor is $X = Aruco_x + (10_{cm} / R)$
+	
+	Nu deze informatie allemaal bekend is word kan deze gebruik worden in de positie bepaling van de objecten. De co\"ordinaten van het object kunnen nu als volgt berekend worden:
+	
+	
+	$\delta X = Object_X - Correctie_x * R$.\\
+	$\delta Y = Object_Y - Correctie_x * R$.\\
+	$schuinezijde = \sqrt{ (\delta X^2 + \delta Y^2) }$.\\
+	$Co"ordinaat_X = schuinezijde.$\\
+	$Co"ordinaat_Y = - baseheight$  Dit omdat het blok altijd op de grond ligt.\\
+	De hoek waaronder de base moet draaien wordt berekend met de inverse tangens.
+	$ tan^-(\delta Y / \delta X)$.
+	
+	Dit wordt samengevoegd in een pakket kan naar de robot software gestuurd kan worden die met inverse kinematica de stand van arm vanaf het zijaanzicht berekend en de de hoek van de base daaraan toevoegt om op de juiste positie uit te komen.
+\subsubsection{Het bepalen van het pad}
+Voor het bepalen van het pad wordt wegens tijdsnood een simpel pad aangehouden van 4 punten. Eerst gaat de robotarm naar zijn op te pakken object. Vervolgens wordt deze zelfde configuratie aangenomen met een verkleining van de shoulder waardoor het object opgetild wordt. Vervolgend gaat de arm naar de configuratie van het doel met nog steeds de ophoging van de shoulder. Als laatste zal de arm naar de configuratie gaan van het doel (De witte cirkel) en daar het object loslaten.
+
+\subsection{Afwegingen}
+In het bepalen van het pad zijn er afwegingen gemaakt in het maken van de software deze zullen hieronder behandeld worden.
+\subsubsection{berekingen van het pad vanaf zijaanzicht met 2 dimensies }
+Voor het berekenen van de configuratie hebben is er een versimpeling gemaakt naar twee dimensies en een draaiing van de base. Dit doordat het rekenen met 4DOF naar 3 dimensies nog te complex was. Wel is er al een uitgerekend wat de jacobiaan is voor deze berekening voordat besloten is dit niet te gebruiken. \\
+
+$ x = x_0 + l_1 \cdot cos(\theta_1) \cdot cos(\theta_0) + l_2 \cdot cos(\theta_1 + \theta_2) \cdot cos(\theta_0) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) \cdot cos(\theta_0)$
+
+$ y = y_0 + l_1 \cdot cos(\theta_1) \cdot sin(\theta_0) + l_2 \cdot cos(\theta_1 + \theta_2) \cdot sin(\theta_0) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) \cdot sin(\theta_0) $
+
+$ z = z_0 + l_1 \cdot sin(\theta_1) + l_2 \cdot sin(\theta_1 + \theta_2) + l_3 \cdot sin(\theta_1 + \theta_2 + \theta_3) $
+
+
+
+
+$
+J =
+\begin{bmatrix}
+\frac{dx}{d\theta_0} & \frac{dx}{d\theta_1} & \frac{dx}{d\theta_2}& \frac{dx}{d\theta_3} \\
+\frac{dy}{d\theta_0} & \frac{dy}{d\theta_1} & \frac{dy}{d\theta_2} & \frac{dy}{d\theta_3} \\
+\frac{dz}{d\theta_0} & \frac{dz}{d\theta_1} & \frac{dz}{d\theta_2} & \frac{dz}{d\theta_3}
+\end{bmatrix}
+$
+
+$\frac{dx}{d\theta_0} = -l_1\cdot cos(\theta_1) \cdot sin(\theta_0) -l_2\cdot  cos(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  cos(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)
+$
+
+$\frac{dx}{d\theta_1} = -l_1\cdot sin(\theta_1) \cdot cos(\theta_0) -l_2\cdot  sin(\theta_1 + \theta_2) \cdot cos(\theta_0) - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)	
+$
+
+$\frac{dx}{d\theta_2} = -l_2\cdot  sin(\theta_1 + \theta_2) \cdot cos(\theta_0) - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)
+$
+
+$\frac{dx}{d\theta_3} = - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)	
+$
+
+
+$\frac{dy}{d\theta_0} = -l_1\cdot cos(\theta_1) \cdot cos(\theta_0) -l_2\cdot  cos(\theta_1 + \theta_2) \cdot cos(\theta_0) -l_3\cdot  cos(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0) $
+
+$\frac{dy}{d\theta_1} = -l_1\cdot sin(\theta_1) \cdot sin(\theta_0) -l_2\cdot  sin(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
+
+$\frac{dy}{d\theta_2} = -l_2 \cdot sin(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
+
+$\frac{dy}{d\theta_3} =-l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
+
+$\frac{dz}{d\theta_0} = 0 $
+
+$\frac{dz}{d\theta_1} = l_1 \cdot cos(\theta_1) + l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
+
+$\frac{dz}{d\theta_2} = l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
+
+$\frac{dz}{d\theta_3} = l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
+
+	
+\subsubsection{berekingen van het pad met inverse kinematica zonder A* }
+
+Voor het berekenen wordt er geen A* gebruikt. Dit omdat het ondanks effectief heel sloom is. De inverse kinematica die gebruikt is levert snel configuraties op maar kan niet garanderen als er niks gevonden dat er ook geen mogelijkheid was. Er is gekozen voor dit algoritme vanwege de snelheid.
+	
+
+   
 
 
 
