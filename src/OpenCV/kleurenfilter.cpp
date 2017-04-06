@@ -19,11 +19,11 @@ Colour_range Alle      (0,0,0, 180,255,255);
 Colour_range Rood_laag (0,50,50,     10,255,255);
 Colour_range Rood_hoog (160,50,50,   180,255,255);
 Colour_range Groen     (36,70,30,  78,255,255);
-Colour_range Blauw     (50,20,18,    133,253,250);
+Colour_range Blauw     (78,100,80,    133,253,250);
 Colour_range Zwart_laag(0,0,0,       180,255,50);
 Colour_range Zwart_hoog(0,205,0,     180,255,58);
-Colour_range Wit_laag  (0,0,156,     180,61,255);
-Colour_range Wit_hoog  (0,0,142,     180,29,255);
+Colour_range Wit_laag  (0,5,170,     180,100,255);
+Colour_range Wit_hoog  (0,35,170,     180,60,255);
 Colour_range Hout 	   (13,60,50,    30,250,255);
 
 void colourfinder::filterOnColour(cv::Mat& input, cv::Mat& output, cv::Mat& mask_Output, colourfinder::colour aColour)

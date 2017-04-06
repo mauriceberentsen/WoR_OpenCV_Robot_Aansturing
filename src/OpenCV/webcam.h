@@ -12,10 +12,10 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
 
-cv::Mat getCameraFeed(int index)
+cv::Mat getCameraFeed(int dex)
 {
 	cv::Mat output;
-	cv::VideoCapture cap(index);
+	cv::VideoCapture cap(dex);
 
 		for (int x = 0; x < 10; ++x) {//collect 30 frames because the webcam has to initialize
 			cap >> output;

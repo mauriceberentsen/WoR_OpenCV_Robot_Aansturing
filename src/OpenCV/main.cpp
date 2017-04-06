@@ -11,22 +11,21 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-
+#include "findGoals.hpp"
 #include "multipicture.h"
 #include "SearchQuery.h"
-#include "searchAruco.hpp"
 #include "Configuration.h"
 #include "webcam.h"
 
 std::string pictureWindow = "Picture";
-
+const double baseHeight = 60;
 std::string input, aColour, aShape;
 
 
 int main(int argc, char **argv) {
 
 	cv::Mat picture_raw, show ,dst;
-	cv::namedWindow(pictureWindow, CV_WINDOW_AUTOSIZE);
+	//cv::namedWindow(pictureWindow, CV_WINDOW_AUTOSIZE);
 	Configuration c;
 
 	picture_raw = getCameraFeed(0);
@@ -34,7 +33,7 @@ int main(int argc, char **argv) {
 	if(argc > 1)
 	{
 		Configuration d(argv[1], picture_raw);
-		cv::imshow(pictureWindow, picture_raw);
+		//cv::imshow(pictureWindow, picture_raw);
 	}
 	else
 	{
@@ -51,27 +50,14 @@ int main(int argc, char **argv) {
 
 			ss >> aColour >> aShape;
 			std::cout << "vorm: " << aShape << " kleur:" << aColour << ": "<< std::endl;
-			SearchQuery qu(picture_raw, dst, colourfinder::colour(c.findColour(aColour)),shapeFinder::shape(c.findShape(aShape)));
-			if(qu.result.size() >0)
-			{
-			double baseX = (info.nulPunt.first - info.correctionX) * info.ratioPixelToMM;
-			double baseY = (info.nulPunt.second - info.correctionY) * info.ratioPixelToMM;
 
-			std::cout<<"X_found: "<<baseX<< "| found_Y: " << baseY <<std::endl;
+			SearchQuery target(picture_raw, dst, colourfinder::colour(c.findColour(aColour)),shapeFinder::shape(c.findShape(aShape)));
+			SearchQuery whiteCircle(picture_raw, dst, colourfinder::colour(c.findColour("wit")),shapeFinder::shape(c.findShape("cirkel")));
+			goal targetParam = findGoal(target, info, baseHeight);
+			goal whiteCirle = 	findGoal(whiteCircle, info, baseHeight);
+			std::cout << "target:  "<< "angle:" << targetParam.angle << "x:" << targetParam.x << "y:" << targetParam.y << std::endl;
+			std::cout << "goal:  " <<"angle:" << whiteCirle.angle << "x:" << whiteCirle.x << "y:" << whiteCirle.y << std::endl;
 
-			double foundX  = (qu.result.front().x - info.correctionX) * info.ratioPixelToMM;
-			double foundY = (qu.result.front().y - info.correctionY) * info.ratioPixelToMM;
-
-			double deltaX = abs(baseX - foundX);
-			double deltaY = abs(baseY - foundY);
-			double delta = std::sqrt(std::pow(deltaX,2) + std::pow(deltaY,2));
-
-			std::cout<<"Xfound: "<<foundX<< "| foundY: " << foundY  << "  |  " << delta <<std::endl;
-			}
-
-			combineScreens(dst, picture_raw,show);
-			cv::imshow(pictureWindow, show);
-			cv::waitKey(10);
 		}
 	}
 
