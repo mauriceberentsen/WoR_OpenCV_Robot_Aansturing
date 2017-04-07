@@ -7,18 +7,21 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{listings}
-\author{Berentsen M.W.J.}
+\author{Berentsen M.W.J. \& Tunc, A}
 \title{WoR-Robots Applicatie}
 \usepackage{titling}
-\newcommand{\subtitle}[3]{%
+
+\newcommand{\subtitle}[4]{%
 	\posttitle{%
 		\par\end{center}
 	\begin{center}\large#1\end{center}
 	\begin{center}\large#2\end{center}
 	\begin{center}\large#3\end{center}
+	\begin{center}\large#4\end{center}
 	\vskip0.5em}%
 }
-\subtitle{HAN Arnhem}{561399}{MWJ.Berentsen@student.han.nl}
+
+\subtitle{HAN Arnhem}{561399 \& 527782 }{MWJ.Berentsen@student.han.nl}{agittunc@live.nl}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt plus 2pt minus 1pt}
@@ -34,7 +37,7 @@ Voor de eindopdracht van WoR-Robots is er de opdracht om een applicatie te lever
 \section{Applicatie design}
 \subsection{Het berekenen van de beweging van de robotarm}
 
-Om het pad te bereken die de robotarm moet afleggen moet er eerst een configuratie gevonden worden. Dit omdat de robot niet aangestuurd wordt met co\"ordinaten maar hij de hoeken van de arm moet ontvangen. Allereerst zal er nu eerst verklaard worden hoe er van co/"ordinaten naar een configuratie gerekend wordt.
+Om het pad te bereken die de robotarm moet afleggen moet er eerst een configuratie gevonden worden. Dit omdat de robot niet aangestuurd wordt met co\"ordinaten maar hij de hoeken van de arm moet ontvangen. Allereerst zal er nu eerst verklaard worden hoe er van co\"ordinaten naar een configuratie gerekend wordt.
 
 \subsubsection{Het berekenen van de nieuwe configuratie}
 Voor het berekenen van de configuratie word er eerst een twee dimensionaal punt bepaald vanaf het zijaanzicht. In het twee dimensionale stelsel wordt er gewerkt met co\"ordinaten X en Y. Deze co\"odinaten zetten we om naar een configuratie met behulp van het volgende algoritme dit daarna per punt wordt behandeld.
@@ -79,71 +82,78 @@ Compute new e vector \\
     \item $\Delta e = \beta(g-e)$ \\ 
     $\Delta e = $ doel co\"ordinaten - huidige co\"ordinaten $(g - e ) \cdot \beta$
     \item $\Delta \theta  = J^- \cdot \Delta e$\\
-    Hier wordt de inverse van de Jacobi ($J^-$) uit stap 3 maal het verschil van de co\"odinaten ($\Delta e$) uit stap 4 gedaan om het schil in de configuratie te benaderen.    
+    Hier wordt de inverse van de Jacobi ($J^-$) uit stap 3 maal het verschil van de co\"ordinaten ($\Delta e$) uit stap 4 gedaan om het schil in de configuratie te benaderen.    
     \item $\theta_{nieuw} = \theta_{oud} + \Delta \theta$\\
     Tel hier de het verschil in de configuratie bij de oude configuratie bij op.
     \item Compute new e vector \\
     Gebruik forward kinematics om te controleren of de gevonden configuratie klopt
 \end{enumerate}       
 
-\subsubsection{het bepalen van de co\"ordinaten}
+\subsubsection{Het bepalen van de co\"ordinaten}
 	Om tot een berekening komen moeten er co\"ordinaten bekend zijn van het op te pakken object en het doel. Hiervoor wordt er vanuit gegaan dat het vinden van deze objecten gewoon lukt en dit pixel co\"ordinaten oplevert. In het programma wordt gebruik gemaakt van \href{http://docs.opencv.org/3.1.0/d5/dae/tutorial_aruco_detection.html}{aruco}. Dit is een libary van opencv die gemakelijk herkeningspunten aanbiedt. Als eerste wordt er op basis van deze vondst de verhouding tussen pixels en milimeters berekend. Het is bekend dat de geprinte aruco 42mm is dus het pixel naar mm ratio is dus $Aruco_{width} / 42$  
 	Dit resulteert in een ratio die vanaf nu $R$ genoemd wordt. Vervolgens kan de positie correctie berekend worden ervan uit gaand dat de aruco precies op de co\"ordinaten $(10,0)$ ligt. 
 	De correctie voor het Y co\"ordinaat is heel simpel dit is het Y punt waarop aruco gevonden is.
 	De correctie voor het X co\"ordinaat moet een kleine correctie krijgen omdat deze 10cm voor de base van de robot ligt. De berekening hiervoor is $X = Aruco_x + (10_{cm} / R)$
 	
-	Nu deze informatie allemaal bekend is word kan deze gebruik worden in de positie bepaling van de objecten. De co\"ordinaten van het object kunnen nu als volgt berekend worden:
+	Nu deze informatie allemaal bekend is kan deze gebruikt worden in de positie bepaling van de objecten. Wat nog vermeld moet is dat er vanuit word gegaan dat de blokken altijd op de grond liggen. De co\"ordinaten van het object kunnen nu als volgt berekend worden:
 	
 	
-	$\delta X = Object_X - Correctie_x * R$.\\
-	$\delta Y = Object_Y - Correctie_x * R$.\\
-	$schuinezijde = \sqrt{ (\delta X^2 + \delta Y^2) }$.\\
+	$\Delta X = Object_X - Correctie_x * R$.\\
+	$\Delta Y = Object_Y - Correctie_x * R$.\\
+	$schuinezijde = \sqrt{ (\Delta X^2 + \Delta Y^2) }$.\\
 	$Co"ordinaat_X = schuinezijde.$\\
-	$Co"ordinaat_Y = - baseheight$  Dit omdat het blok altijd op de grond ligt.\\
-	De hoek waaronder de base moet draaien wordt berekend met de inverse tangens.
-	$ tan^-(\delta Y / \delta X)$.
+	$Co"ordinaat_Y = - baseheight$ \\
+	$ tan^-(\Delta Y / \Delta X)$.
 	
-	Dit wordt samengevoegd in een pakket kan naar de robot software gestuurd kan worden die met inverse kinematica de stand van arm vanaf het zijaanzicht berekend en de de hoek van de base daaraan toevoegt om op de juiste positie uit te komen.
+	Dit wordt samengevoegd in een pakket die naar de robot software gestuurd word die met inverse kinematica de stand van arm vanaf het zijaanzicht berekend en de hoek van de base daaraan toevoegt om op de juiste positie uit te komen.
 \subsubsection{Het bepalen van het pad}
-Voor het bepalen van het pad wordt wegens tijdsnood een simpel pad aangehouden van 4 punten. Eerst gaat de robotarm naar zijn op te pakken object. Vervolgens wordt deze zelfde configuratie aangenomen met een verkleining van de shoulder waardoor het object opgetild wordt. Vervolgend gaat de arm naar de configuratie van het doel met nog steeds de ophoging van de shoulder. Als laatste zal de arm naar de configuratie gaan van het doel (De witte cirkel) en daar het object loslaten.
+Voor het bepalen van het pad word wegens tijdsnood een simpel pad aangehouden van 4 punten. Eerst gaat de robotarm naar zijn op te pakken object. Vervolgens wordt deze zelfde configuratie aangenomen met een verkleining van de shoulder waardoor het object opgetild wordt. Vervolgend gaat de arm naar de configuratie van het doel met nog steeds de ophoging van de shoulder. Als laatste zal de arm naar de configuratie gaan van het doel (De witte cirkel) en daar het object loslaten.
 
 \subsection{Afwegingen}
 In het bepalen van het pad zijn er afwegingen gemaakt in het maken van de software deze zullen hieronder behandeld worden.
-\subsubsection{berekingen van het pad vanaf zijaanzicht met 2 dimensies }
-Voor het berekenen van de configuratie hebben is er een versimpeling gemaakt naar twee dimensies en een draaiing van de base. Dit doordat het rekenen met 4DOF naar 3 dimensies nog te complex was. Wel is er al een uitgerekend wat de jacobiaan is voor deze berekening voordat besloten is dit niet te gebruiken. \\
+\subsubsection{Berekingen van het pad vanaf zijaanzicht met 2 dimensies }
+Voor het berekenen van de configuratie hebben is er een versimpeling gemaakt naar twee dimensies en een draaiing van de base. Dit doordat het rekenen met 4DOF naar 3 dimensies nog te complex was. Wel is er al een uitgerekend wat de jacobiaan is voor deze berekening voordat besloten is dit niet te gebruiken. Deze staat beschreven in \autoref{4DOF}
 
+	
+\subsubsection{Berekingen van het pad met inverse kinematica zonder A* }
+
+Voor het berekenen wordt er geen A* gebruikt. Dit omdat het ondanks effectief heel sloom is. De inverse kinematica die gebruikt is levert snel configuraties op maar kan niet garanderen als er niks gevonden dat er ook geen mogelijkheid was. Er is gekozen voor dit algoritme vanwege de snelheid.
+ 
+\section{Verloop opdracht}
+Om het verloop te beschrijven wordt het proces in drie stukken gedeeld. Dit is de start van de opdracht het middelstuk en de afsluiting
+\subsection{Start}
+Bij de start van de opdracht is er eerst besproken hoe de samenwerking moest verlopen. Daar is gekozen voor het gebruik van \href{http://www.github.com}{Github}, deze keuze is gebaseerd op het feit dat het gratis is en het versie beheer bekend is voor de studenten. Vervolgens is er geïnventariseerd wat er al beschikbaar was. Zo is er door Berentsen, M (Maurice) al een applicatie geschreven die de figuren kan herkennen en in kaart brengen en door Tunc, A (Agit) een applicatie die via ROS de arm kan aansturen. Deze zijn met een lichte aanpassing direct bruikbaar in deze opdracht en worden dan ook beiden gebruikt.
+\subsection{Middelstuk}
+Zodra er een fundering was gelegd is er een plan van aanpak afgesproken. Als eerste werden de taken opgedeeld in complexiteit. De opdracht met de hoogste complexiteit is het maken van een algoritme die de configuratie van de robotarm berekend. Daarna het bepalen van de positie van de objecten en als laatste het samenwerken van de componenten. De complexiteit is natte vinger werk geweest van de studenten gebaseerd op hoe zij hier tegenaan keken. De studenten zijn eerst begonnen samen m.b.v. wiskunde uit het wiskunde dictaat van de leraar Kraaijeveld, J en zijn lessen. Hier is eerst in C++ een algoritme voor uitgewerkt waarbij samen de wiskunde is uitgewerkt en Agit grotendeels van de basis van de code heeft geschreven. Vervolgens hebben zij samen de code verder uitgewerkt tot het zijn doel behaalde.  Terwijl Agit bezig was voor het leggen van de basis van de code voor het algoritme heeft Maurice de code verder uitgewerkt voor terug geven van de co\"ordinaten van de objecten ten opzichte van de robotarm. Hij heeft hier het voorstel gedaan voor het gebruik van aruco en dit na goedkeuring van Agit ge\"implementeerd. Vervolgens nadat deze taken klaar waren is Agit bezig geweest om de stap naar ROS te zetten dat de gevonden configuratie naar de robot gestuurd wordt en het OpenCV implantatie ook berichten kan versturen. Terwijl dit bezig was heeft Maurice de Latex uitgewerkt zodat deze een beschrijving geeft van de het programma.
+\subsection{Slot}
+Uiteindelijk hebben de studenten alle componenten samengevoegd en getest door het gewenste scenario door te lopen hieruit kwamen ongewenste situaties zoals het wegschuiven van het object naar voren. Hierover hebben de studenten samen gebrainstormd en zijn ze met oplossingen gekomen die nog toegevoegd moesten worden aan het programma. Als laatste stap moeten de studenten nog de warnings uit het programma werken. 
+
+\section{Appendices}
+\appendix
+\section{Jacobi berekening 4DOF naar 3D}
+\label{4DOF}
 $ x = x_0 + l_1 \cdot cos(\theta_1) \cdot cos(\theta_0) + l_2 \cdot cos(\theta_1 + \theta_2) \cdot cos(\theta_0) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) \cdot cos(\theta_0)$
 
 $ y = y_0 + l_1 \cdot cos(\theta_1) \cdot sin(\theta_0) + l_2 \cdot cos(\theta_1 + \theta_2) \cdot sin(\theta_0) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) \cdot sin(\theta_0) $
 
 $ z = z_0 + l_1 \cdot sin(\theta_1) + l_2 \cdot sin(\theta_1 + \theta_2) + l_3 \cdot sin(\theta_1 + \theta_2 + \theta_3) $
 
-
-
-
-$
-J =
+$J =
 \begin{bmatrix}
 \frac{dx}{d\theta_0} & \frac{dx}{d\theta_1} & \frac{dx}{d\theta_2}& \frac{dx}{d\theta_3} \\
 \frac{dy}{d\theta_0} & \frac{dy}{d\theta_1} & \frac{dy}{d\theta_2} & \frac{dy}{d\theta_3} \\
 \frac{dz}{d\theta_0} & \frac{dz}{d\theta_1} & \frac{dz}{d\theta_2} & \frac{dz}{d\theta_3}
-\end{bmatrix}
-$
+\end{bmatrix}$
 
-$\frac{dx}{d\theta_0} = -l_1\cdot cos(\theta_1) \cdot sin(\theta_0) -l_2\cdot  cos(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  cos(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)
-$
+$\frac{dx}{d\theta_0} = -l_1\cdot cos(\theta_1) \cdot sin(\theta_0) -l_2\cdot  cos(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  cos(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
 
-$\frac{dx}{d\theta_1} = -l_1\cdot sin(\theta_1) \cdot cos(\theta_0) -l_2\cdot  sin(\theta_1 + \theta_2) \cdot cos(\theta_0) - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)	
-$
+$\frac{dx}{d\theta_1} = -l_1\cdot sin(\theta_1) \cdot cos(\theta_0) -l_2\cdot  sin(\theta_1 + \theta_2) \cdot cos(\theta_0) - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)$
 
-$\frac{dx}{d\theta_2} = -l_2\cdot  sin(\theta_1 + \theta_2) \cdot cos(\theta_0) - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)
-$
+$\frac{dx}{d\theta_2} = -l_2\cdot  sin(\theta_1 + \theta_2) \cdot cos(\theta_0) - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)$
 
-$\frac{dx}{d\theta_3} = - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)	
-$
+$\frac{dx}{d\theta_3} = - l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)$
 
-
-$\frac{dy}{d\theta_0} = -l_1\cdot cos(\theta_1) \cdot cos(\theta_0) -l_2\cdot  cos(\theta_1 + \theta_2) \cdot cos(\theta_0) -l_3\cdot  cos(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0) $
+$\frac{dy}{d\theta_0} = -l_1\cdot cos(\theta_1) \cdot cos(\theta_0) -l_2\cdot  cos(\theta_1 + \theta_2) \cdot cos(\theta_0) -l_3\cdot  cos(\theta_1 + \theta_2 + \theta_3 ) \cdot cos(\theta_0)$
 
 $\frac{dy}{d\theta_1} = -l_1\cdot sin(\theta_1) \cdot sin(\theta_0) -l_2\cdot  sin(\theta_1 + \theta_2) \cdot sin(\theta_0) -l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
 
@@ -151,29 +161,11 @@ $\frac{dy}{d\theta_2} = -l_2 \cdot sin(\theta_1 + \theta_2) \cdot sin(\theta_0) 
 
 $\frac{dy}{d\theta_3} =-l_3\cdot  sin(\theta_1 + \theta_2 + \theta_3 ) \cdot sin(\theta_0)$
 
-$\frac{dz}{d\theta_0} = 0 $
+$\frac{dz}{d\theta_0} = 0$
 
-$\frac{dz}{d\theta_1} = l_1 \cdot cos(\theta_1) + l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
+$\frac{dz}{d\theta_1} = l_1 \cdot cos(\theta_1) + l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3)$
 
-$\frac{dz}{d\theta_2} = l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
+$\frac{dz}{d\theta_2} = l_2 \cdot cos(\theta_1 + \theta_2) + l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3)$
 
-$\frac{dz}{d\theta_3} = l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3) $
-
-	
-\subsubsection{berekingen van het pad met inverse kinematica zonder A* }
-
-Voor het berekenen wordt er geen A* gebruikt. Dit omdat het ondanks effectief heel sloom is. De inverse kinematica die gebruikt is levert snel configuraties op maar kan niet garanderen als er niks gevonden dat er ook geen mogelijkheid was. Er is gekozen voor dit algoritme vanwege de snelheid.
-	
-
-   
-
-
-
-
-
-
-
- 
-\section{Verloop opdracht}
-Bij de start van de opdracht is er eerst besproken hoe de samenwerking moest verlopen. Daar is gekozen voor het gebruik van \href{http://www.github.com}{Github}, deze keuze is gebaseerd op het feit dat het gratis is en het versie beheer bekend is voor de studenten. Vervolgens is er geïnventariseerd wat er al beschikbaar was. Zo is er door Berentsen, M al een applicatie geschreven die de figuren kan herkennen en in kaart brengen en door Tunc, A een applicatie die via ROS de arm kan aansturen. Deze zijn met een lichte aanpassing direct bruikbaar in deze opdracht en worden dan ook beiden gebruikt.
+$\frac{dz}{d\theta_3} = l_3 \cdot cos(\theta_1 + \theta_2 + \theta_3)$
 \end{document}
