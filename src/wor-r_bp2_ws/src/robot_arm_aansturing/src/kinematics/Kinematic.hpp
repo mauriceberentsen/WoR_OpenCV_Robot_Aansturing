@@ -48,7 +48,7 @@ private:
 	 * Deze functie berekent de Jacobi matrix oftewel de afgeleide van de foreward kinematics
 	 * Deze functie werkt alleen met 3DOF robot vandaar de hard gecodeerde matrixen
 	 */
-	Matrix<2,3,double> calculateJacobiMatrix(Matrix<2,1,double> coordinates,Matrix<3,1,double> angles);
+	Matrix<2,3,double> calculateJacobiMatrix(Matrix<3,1,double> angles);
 
 };
 

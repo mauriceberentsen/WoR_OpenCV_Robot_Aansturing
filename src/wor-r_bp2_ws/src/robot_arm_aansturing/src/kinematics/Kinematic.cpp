@@ -28,8 +28,7 @@ std::pair<double, double> Kinematic::forward_kinematic(double x0, double y0,doub
 	return std::make_pair(x,y);
 }
 
-Matrix<2, 3, double> Kinematic::calculateJacobiMatrix(
-		Matrix<2, 1, double> coordinates, Matrix<3, 1, double> angles)
+Matrix<2, 3, double> Kinematic::calculateJacobiMatrix(Matrix<3, 1, double> angles)
 {
 	 Matrix<2,3,double> result;
 
@@ -63,7 +62,7 @@ Matrix<3, 1, double> Kinematic::inverse_kinematica(double x0, double y0,
 	{
 
 		//stap1 compute jacobi matrix
-		Matrix<2,3,double> jacobiMatrix = calculateJacobiMatrix(e,currentPose); // resultaat van jacobijnse kom hier in. Jacobijn is afgeleide van forward_kinematic
+		Matrix<2,3,double> jacobiMatrix = calculateJacobiMatrix(currentPose); // resultaat van jacobijnse kom hier in. Jacobijn is afgeleide van forward_kinematic
 		//std::cout<<jacobiMatrix<<std::endl;
 
 		//stap2 using Moore–Penrose pseudoinverse  (A+=A*(AA*)-1)
